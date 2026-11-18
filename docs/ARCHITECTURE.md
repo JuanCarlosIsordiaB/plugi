@@ -4,7 +4,7 @@
 
 buscaPila has two independent TypeScript applications in one Git repository.
 The mobile app contains a minimal buscaPila Home screen; Expo tutorial screens and demo navigation have been removed. The API exposes GET / returning Hello World!.
-PostgreSQL 18 is configured locally with Docker Compose and connected to NestJS through a node-postgres pool. Startup performs SELECT 1, and db:check verifies a real connection. There is no implemented mobile-to-API request, product schema, authentication, or production deployment yet.
+PostgreSQL 18 is configured locally with Docker Compose and connected to NestJS through a node-postgres pool. Startup performs SELECT 1, and db:check verifies a real connection. The backend provides first-party email and password authentication, authenticator verification, and mobile Bearer sessions. The mobile client integration and production deployment are pending.
 
 ## System diagram
 
@@ -23,11 +23,14 @@ flowchart LR
     Postgres --> Volume[Docker named volume]
     Module --> Controller[AppController: GET /]
     Controller --> Service[AppService: Hello World!]
-    Mobile -. Planned HTTP API request .-> Controller
+    Module --> Auth[AuthModule]
+    Auth --> Pool
+    Auth --> Email[Resend verification and recovery email]
+    Mobile -. Planned authentication requests .-> Auth
 ```
 
 This shows logical ownership and calls, not a deployment topology. The existing API uses port 3000 by default.
-A physical phone must use the PC's reachable network address rather than localhost. PostgreSQL is bound only to 127.0.0.1 (port 5433 on this workstation). The phone never receives database credentials or connects to PostgreSQL directly. The API currently checks connectivity but does not persist product data; tables and migrations will follow concrete feature requirements.
+A physical phone must use the PC's reachable network address rather than localhost. PostgreSQL is bound only to 127.0.0.1 (port 5433 on this workstation). The phone never receives database credentials or connects to PostgreSQL directly. The auth migration adds the database records needed for credentials, challenges, rate limits, and sessions. The [authentication API contract](api/auth.md) describes the mobile routes.
 The mobile app targets iOS and Android; an Android JavaScript export has passed, but this is not native/device verification.
 
 ## Agent workflow

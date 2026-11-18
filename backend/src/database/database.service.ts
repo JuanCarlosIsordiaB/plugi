@@ -4,7 +4,7 @@ import {
   type OnApplicationShutdown,
   type OnModuleInit,
 } from '@nestjs/common';
-import type { Pool, QueryResult, QueryResultRow } from 'pg';
+import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnApplicationShutdown {
@@ -33,6 +33,24 @@ export class DatabaseService implements OnModuleInit, OnApplicationShutdown {
     return (this.closing ??= this.pool.end().catch(() => {
       throw new Error('Could not close the PostgreSQL pool.');
     }));
+  }
+
+  async transaction<T>(work: (client: PoolClient) => Promise<T>): Promise<T> {
+    const client = await this.pool.connect();
+    let discard = false;
+    try {
+      await client.query('BEGIN');
+      const result = await work(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK').catch(() => {
+        discard = true;
+      });
+      throw error;
+    } finally {
+      client.release(discard);
+    }
   }
 
   query<Row extends QueryResultRow = QueryResultRow>(

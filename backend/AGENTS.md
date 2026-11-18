@@ -6,7 +6,8 @@ Follow root AGENTS.md. Write in backend/; read frontend/ for contract verificati
 Use English for all project artifacts. Organize features by domain with modules, controllers, services, schemas/DTOs,
 and relevant tests. Keep controllers HTTP-focused and use constructor dependency injection.
 Avoid circular dependencies and speculative abstractions. PostgreSQL connections go through
-`DatabaseService`. Use SQL parameters for user-supplied values. Authentication is not configured yet.
+`DatabaseService`. Use SQL parameters for user-supplied values. First-party authentication is implemented in
+`src/auth/`. Keep credential checks and session revocation inside their account transactions.
 
 ## Versions and documentation
 

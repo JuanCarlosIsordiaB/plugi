@@ -4,6 +4,8 @@ import request from 'supertest';
 import { App } from 'supertest/types.js';
 import { AppModule } from './../src/app.module.js';
 import { DatabaseService } from '../src/database/database.service.js';
+import { AuthMail } from '../src/auth/auth-mail.service.js';
+import { AuthSecrets } from '../src/auth/credentials.js';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
@@ -12,6 +14,10 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideProvider(AuthMail)
+      .useValue({})
+      .overrideProvider(AuthSecrets)
+      .useValue({})
       .overrideProvider(DatabaseService)
       .useValue({})
       .compile();
