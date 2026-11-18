@@ -2,6 +2,8 @@
 
 React Native + Expo mobile app and NestJS API in one Git repository.
 
+Repository: [JuanCarlosIsordiaB/plugi](https://github.com/JuanCarlosIsordiaB/plugi), branch `main`. The repository is public; local environment files and generated output are excluded from version control.
+
 ```text
 buscaPila/
 |-- .codex/agents/       # Specialized agent definitions
