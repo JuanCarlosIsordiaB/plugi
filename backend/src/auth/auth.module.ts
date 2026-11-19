@@ -24,5 +24,6 @@ import { TotpService } from './totp.service.js';
     Accounts,
     TotpService,
   ],
+  exports: [Sessions],
 })
 export class AuthModule {}

@@ -1,11 +1,14 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
-import { loadBackendEnv } from './environment.js';
+import { loadBackendEnv, readLocalWebCors } from './environment.js';
 
 async function bootstrap() {
   loadBackendEnv();
-  const app = await NestFactory.create(AppModule, { abortOnError: false });
+  const app = await NestFactory.create(AppModule, {
+    abortOnError: false,
+    cors: readLocalWebCors(process.env),
+  });
   app.enableShutdownHooks();
 
   try {

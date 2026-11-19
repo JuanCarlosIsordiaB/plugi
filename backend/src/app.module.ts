@@ -3,9 +3,11 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { DatabaseModule } from './database/database.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { StationsModule } from './stations/stations.module.js';
+import { VehicleContactModule } from './vehicle-contact/vehicle-contact.module.js';
 
 @Module({
-  imports: [DatabaseModule, AuthModule],
+  imports: [DatabaseModule, AuthModule, StationsModule, VehicleContactModule],
   controllers: [AppController],
   providers: [AppService],
 })

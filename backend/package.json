@@ -15,6 +15,7 @@
     "start:prod": "node dist/main",
     "db:check": "node dist/database/check.js",
     "db:migrate": "node dist/database/migrate.js",
+    "admin:role": "node dist/database/set-admin.js",
     "lint": "oxlint --type-aware src/ test/",
     "test": "vitest run",
     "test:watch": "vitest",

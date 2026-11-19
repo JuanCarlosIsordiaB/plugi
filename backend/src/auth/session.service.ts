@@ -13,6 +13,7 @@ export interface UserRow {
   country: string | null;
   language: string | null;
   password_hash: string;
+  is_admin: boolean;
   totp_enabled: boolean;
   totp_secret: string | null;
   totp_last_step: string | null;
@@ -46,7 +47,7 @@ export async function lockUser(
   id: string,
 ): Promise<UserRow> {
   const { rows } = await client.query<UserRow>(
-    'SELECT * FROM auth_users WHERE id=$1 FOR UPDATE',
+    'SELECT * FROM auth_users WHERE id=$1 FOR NO KEY UPDATE',
     [id],
   );
   if (!rows[0]) throw new UnauthorizedException('Account unavailable.');

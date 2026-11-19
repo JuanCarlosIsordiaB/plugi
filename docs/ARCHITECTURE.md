@@ -3,8 +3,8 @@
 ## Current state
 
 buscaPila has two independent TypeScript applications in one Git repository.
-The mobile app contains a minimal buscaPila Home screen; Expo tutorial screens and demo navigation have been removed. The API exposes GET / returning Hello World!.
-PostgreSQL 18 is configured locally with Docker Compose and connected to NestJS through a node-postgres pool. Startup performs SELECT 1, and db:check verifies a real connection. The backend provides first-party email and password authentication, authenticator verification, and mobile Bearer sessions. The mobile client integration and production deployment are pending.
+Expo web provides a Leaflet charging map, station details, community reports and proposals, account access, vehicle registration, and private charging conversations. The native target currently displays the buscaPila placeholder. The API exposes GET / returning Hello World!.
+PostgreSQL 18 is configured locally with Docker Compose and connected to NestJS through a node-postgres pool. Startup performs SELECT 1, and db:check verifies a real connection. The backend provides first-party authentication, community charging status, station proposal review, vehicle registration, authenticated exact-match vehicle lookup, and private charging messages. The mobile client integration and production deployment are pending.
 
 ## System diagram
 
@@ -15,7 +15,10 @@ flowchart LR
     Scripts[Root npm scripts] --> Mobile[frontend: React Native + Expo]
     Scripts --> API[backend: NestJS]
     Mobile --> Router[Expo Router: src/app]
-    Router --> Home[buscaPila Home screen]
+    Router --> Home[Native home placeholder]
+    Router --> Web[Expo web: map, account, proposals and messages]
+    Web --> Tiles[OpenStreetMap tiles]
+    Location[Browser location permission] -->|User-requested position| Web
     API --> Module[AppModule]
     Module --> DatabaseModule[DatabaseModule]
     DatabaseModule --> Pool[DatabaseService: pg pool]
@@ -26,11 +29,22 @@ flowchart LR
     Module --> Auth[AuthModule]
     Auth --> Pool
     Auth --> Email[Resend verification and recovery email]
-    Mobile -. Planned authentication requests .-> Auth
+    Web --> Auth
+    Mobile -. Planned native authentication .-> Auth
+    Module --> Stations[StationsModule]
+    Module --> Contact[VehicleContactModule]
+    Stations --> Pool
+    Contact --> Pool
+    Stations --> Auth
+    Contact --> Auth
+    Web --> Stations
+    Web --> Contact
+    Mobile -. Planned native map and proposals .-> Stations
+    Mobile -. Planned vehicle and messaging requests .-> Contact
 ```
 
-This shows logical ownership and calls, not a deployment topology. The existing API uses port 3000 by default.
-A physical phone must use the PC's reachable network address rather than localhost. PostgreSQL is bound only to 127.0.0.1 (port 5433 on this workstation). The phone never receives database credentials or connects to PostgreSQL directly. The auth migration adds the database records needed for credentials, challenges, rate limits, and sessions. The [authentication API contract](api/auth.md) describes the mobile routes.
+This shows logical ownership and calls. The existing API uses port 3000 by default. Local browser requests use an explicit loopback CORS origin, and access and refresh tokens live in browser memory for the life of the page. On request, the browser position centers the map and sorts stations by distance. API and tile requests use the viewed area.
+A physical phone must use the PC's reachable network address rather than localhost. PostgreSQL is bound only to 127.0.0.1 (port 5433 on this workstation). The phone never receives database credentials or connects to PostgreSQL directly. Versioned migrations create the authentication, charging catalog, and vehicle contact schema. See the API contracts for [authentication](api/auth.md), [charging and station proposals](api/charging.md), and [vehicles and messages](api/vehicle-contact.md).
 The mobile app targets iOS and Android; an Android JavaScript export has passed, but this is not native/device verification.
 
 ## Agent workflow

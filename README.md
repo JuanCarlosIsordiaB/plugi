@@ -1,6 +1,6 @@
 # buscaPila
 
-React Native + Expo mobile app and NestJS API in one Git repository.
+Expo app and NestJS API in one Git repository. The browser MVP includes a charging map, community reports and proposals, and private vehicle contact. The native target is a placeholder.
 
 Repository: [JuanCarlosIsordiaB/plugi](https://github.com/JuanCarlosIsordiaB/plugi), branch `main`. The repository is public; local environment files and generated output are excluded from version control.
 
@@ -27,7 +27,7 @@ All project code, identifiers, comments, documentation, and new UI text use Engl
 
 View these documents using a Mermaid-capable Markdown preview, such as GitHub's rendered file view.
 Solid system arrows represent implemented relationships; dashed arrows are planned.
-The mobile app and API are not connected yet. The coordinator updates both documents as meaningful work completes.
+See the [frontend setup](frontend/README.md), [backend setup](backend/README.md), and [API contracts](docs/api).
 
 ## Requirements
 
@@ -45,8 +45,7 @@ npm.cmd run setup
 ## PostgreSQL local development
 
 The NestJS backend uses a node-postgres connection pool. PostgreSQL 18 runs locally through Docker Compose.
-Start Docker Desktop first. No product tables, ORM, authentication, or migrations are introduced yet.
-When mobile integration is implemented, the phone will talk to the API; database credentials never belong in the mobile app. The current Home screen does not make API requests.
+Start Docker Desktop first. The API uses versioned SQL migrations for authentication, charging stations, and vehicle contact. Database credentials belong to the backend environment.
 
 This workstation has an ignored backend/.env with generated local credentials. For a new checkout,
 copy backend/.env.example to backend/.env and set PGPASSWORD to a strong random 48-character hexadecimal password. Use only hexadecimal characters in this shared local file: Docker expands dollar signs and Node interprets hash characters differently in unquoted values, so a general special-character password may be parsed inconsistently.
@@ -57,8 +56,8 @@ Environment variables take precedence; avoid unrelated PG* values in the shell.
 # From the project root, after configuring backend/.env
 npm.cmd run db:up
 npm.cmd run build:backend
+npm.cmd --prefix backend run db:migrate
 npm.cmd run db:check
-npm.cmd run dev:backend
 ```
 
 Use npm.cmd run db:status to inspect the service and npm.cmd run db:stop to stop it without deleting data.
@@ -72,15 +71,15 @@ Production needs a least-privilege application role, managed secrets, network/TL
 and a deliberate migration workflow before deployment. Never disable certificate verification to connect remotely.
 
 Backend startup checks database connectivity and fails if configuration or the connection is invalid.
-The starter GET / endpoint remains unchanged and does not access product data. Unit and HTTP tests isolate database infrastructure with mocks; use db:check separately to verify a real PostgreSQL connection.
+The public GET / endpoint is a simple health response. The [backend guide](backend/README.md#validation) describes the opt-in HTTP suite with isolated PostgreSQL schemas.
 
 ## Development
 
-Open two terminals in the repository root.
+Set `WEB_ORIGIN=http://localhost:8081` and the authentication settings in `backend/.env` as described in the [backend guide](backend/README.md). Open two terminals in the repository root.
 
 ```powershell
-# Terminal 1: mobile app
-npm.cmd run dev:frontend
+# Terminal 1
+npm.cmd --prefix frontend run web -- --port 8081
 ```
 
 ```powershell
@@ -88,10 +87,9 @@ npm.cmd run dev:frontend
 npm.cmd run dev:backend
 ```
 
-The starter API responds with Hello World! at http://localhost:3000/.
-Expo displays a QR code for Expo Go. On a physical phone, use the PC's reachable local IP for the API,
-such as http://192.168.1.10:3000. The phone and PC must share a network and Windows must allow the connection.
-The mobile app does not consume the API yet.
+Open `http://localhost:8081`. The browser uses `http://localhost:3000/api/v1` by default. The local CORS setting accepts the configured loopback origin.
+
+A fresh database contains connector types and starts with an empty station catalog. Create and verify a local account using the [authentication API](docs/api/auth.md), grant its administrator role with `npm.cmd --prefix backend run admin:role -- grant <email>`, and create a station using the [charging API](docs/api/charging.md). The new station appears in the map when its coordinates are within view. Registration and verification depend on a working Resend sender.
 
 ## Root commands
 
@@ -110,7 +108,7 @@ The mobile app does not consume the API yet.
 
 ## Code organization
 
-Frontend routes and navigation live in frontend/src/app/. The minimal Home screen uses Expo Router theme context and React Native styles. Configured application icons and splash images live in frontend/assets/. Expo demo screens, tutorial helpers, and unused demo assets have been removed.
+Frontend navigation lives in `frontend/src/app/`. Web features are organized under `charging/`, `contact/`, and `proposals/` within `frontend/src/`. Application icons and splash images live in `frontend/assets/`, and web fonts and icons live in `frontend/public/`.
 
 Backend startup is src/main.ts; src/app.module.ts is the root module. The starter controller/service
 handle GET /. HTTP tests live in test/. Add future backend features by domain, for example src/users/,

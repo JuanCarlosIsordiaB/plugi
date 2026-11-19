@@ -1,10 +1,12 @@
 # buscaPila Backend
 
-The NestJS API serves the public `GET /` health check and versioned email/password, session, recovery and authenticator endpoints under `/api/v1`. It listens on port `3000` by default. See the [authentication contract](../docs/api/auth.md).
+The NestJS API serves the public `GET /` health check and versioned routes under `/api/v1`. It listens on port `3000` by default. See the API contracts for [authentication](../docs/api/auth.md), [charging and station proposals](../docs/api/charging.md), and [vehicles and messages](../docs/api/vehicle-contact.md).
 
 ## Local development
 
 Start PostgreSQL and configure `backend/.env` using the [root setup instructions](../README.md#postgresql-local-development). The API reads `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, and `PGPASSWORD`. Process environment values take precedence over the file.
+
+For Expo web development, set `WEB_ORIGIN=http://localhost:8081` in `backend/.env` and restart the API. Match the exact browser origin, including the port, using HTTP with `localhost`, `127.0.0.1`, or `[::1]`. Omit a trailing slash. CORS is disabled when the value is unset or `NODE_ENV=production`. The configured origin can use GET, POST, DELETE and OPTIONS with the `Authorization`, `Content-Type` and `x-challenge-id` headers. Browser credentials are disabled.
 
 Set `RESEND_API_KEY` and `RESEND_FROM_EMAIL` for a verified Resend sender. Set `AUTH_ENCRYPTION_KEY` to a stable, private 64-character hex key. This key protects authenticator secrets and email challenge codes. Existing authenticator enrollments depend on the key. Generate it locally with `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"` and store it with the backend secrets.
 
@@ -19,7 +21,14 @@ npm.cmd run start:dev
 
 At startup the API checks the PostgreSQL connection with `SELECT 1` before accepting requests. It closes the connection pool on shutdown.
 
-`db:migrate` applies the versioned authentication schema in a transaction and records its name in `buscapila_migrations`. Repeated runs skip applied SQL. Run it explicitly on the intended database before serving authentication requests.
+`db:migrate` applies versioned SQL migrations in order and records their names in `buscapila_migrations`. Repeated runs skip applied files. Run it explicitly on the intended database before serving API requests.
+
+Create and verify an account before granting the administrator role. The CLI changes only the specified account on the configured database.
+
+```powershell
+npm.cmd run admin:role -- grant admin@example.com
+npm.cmd run admin:role -- revoke admin@example.com
+```
 
 Production clients should connect over HTTPS. Request paths for verification and recovery contain short-lived credentials. Configure gateway access logs to redact those paths, authorization headers and challenge headers. The default Express configuration uses the connection address for per-IP limits. When deploying behind a proxy, configure trust for the specific ingress topology so the API can identify individual clients.
 
@@ -41,7 +50,7 @@ npm.cmd test
 npm.cmd run test:e2e
 ```
 
-The default test runs use a mocked pool and a public-route HTTP test. To exercise authentication over a real HTTP socket and PostgreSQL, point the PG settings at a **test database** whose role can create schemas, then run the following commands.
+The default test runs use a mocked pool and a public-route HTTP test. To exercise authentication and the charging MVP over real HTTP sockets and PostgreSQL, point the PG settings at a **test database** whose role can create schemas, then run the following commands.
 
 ```powershell
 $env:AUTH_TEST_POSTGRES = '1'
