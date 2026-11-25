@@ -137,11 +137,89 @@ describe.runIf(process.env.AUTH_TEST_POSTGRES === '1')(
       expect(result.body).toEqual({ id: expect.any(String), ...normalized });
       return result.body.id as string;
     }
+    async function plateToken() {
+      const { body } = await lookup(sender, { plate: ' a B-123 ' }).expect(200);
+      expect(body).toEqual({
+        registered: true,
+        contactToken: expect.any(String),
+      });
+      return body.contactToken as string;
+    }
     async function threads(token: string) {
       return (await api('get', inbox, token).expect(200)).body
         .conversations as { id: string; updatedAt: string }[];
     }
     const receipt = { accepted: true };
+    it('registers a Mexican vehicle with a VIN and plate and makes it reachable by both identifiers', async () => {
+      const compact = { vin: vehicle.vin, plate: vehicle.plate };
+      await api('post', '/vehicles').send(compact).expect(401);
+      for (const invalid of [
+        { ...compact, plateCountry: 'MX' },
+        { ...compact, plateRegion: 'CMX' },
+        { ...compact, plateCountry: 'MX', plateRegion: '' },
+        { vin: vehicle.vin },
+        { plate: vehicle.plate },
+      ]) {
+        await api('post', '/vehicles', owner).send(invalid).expect(400);
+      }
+      const foreign = {
+        ...another,
+        plate: vehicle.plate,
+        plateCountry: 'US',
+        plateRegion: 'CA',
+      };
+      await api('post', '/vehicles', outsider).send(foreign).expect(201);
+      const { body } = await api('post', '/vehicles', owner)
+        .send(compact)
+        .expect(201);
+      expect(body).toEqual({
+        ...normalized,
+        id: expect.any(String),
+        plateRegion: '',
+      });
+      await api('get', '/vehicles', owner).expect(200, { vehicles: [body] });
+      await send(sender, { contactToken: await plateToken() }).expect(
+        202,
+        receipt,
+      );
+      await lookup(outsider, { vin: vehicle.vin }).expect(200, {
+        registered: true,
+      });
+      await send(outsider, { vin: vehicle.vin }).expect(202, receipt);
+      expect(await threads(owner)).toHaveLength(2);
+      expect(await threads(outsider)).toEqual([]);
+    });
+
+    it('rejects compact and region-qualified Mexican plate conflicts in either order', async () => {
+      const compact = { vin: another.vin, plate: normalized.plate };
+      const id = await register();
+      const first = await api('post', '/vehicles', outsider)
+        .send(compact)
+        .expect(409);
+      await api('delete', '/vehicles/' + id, owner).expect(204);
+      await api('post', '/vehicles', outsider).send(compact).expect(201);
+      await api('post', '/vehicles', owner)
+        .send(vehicle)
+        .expect(409, first.body);
+      await api('post', '/vehicles', owner)
+        .send({ ...vehicle, plateCountry: 'US', plateRegion: 'CA' })
+        .expect(201);
+    });
+
+    it('serializes competing compact and qualified registrations of one Mexican plate', async () => {
+      const results = await Promise.all([
+        api('post', '/vehicles', owner).send(vehicle),
+        api('post', '/vehicles', outsider).send({
+          vin: another.vin,
+          plate: normalized.plate,
+        }),
+      ]);
+      expect(results.map((result) => result.status)).toEqual(
+        expect.arrayContaining([201, 409]),
+      );
+      await plateToken();
+    });
+
     it('normalizes and scopes multiple vehicles and both contact identifiers', async () => {
       await api('get', '/vehicles').expect(401);
       await api('post', start).send({ vin: vehicle.vin }).expect(401);
@@ -195,7 +273,7 @@ describe.runIf(process.env.AUTH_TEST_POSTGRES === '1')(
       for (const invalid of [
         { vin: 'BAD' },
         { ...plate, vin: vehicle.vin },
-        { plate: plate.plate },
+        { plate: plate.plate, plateRegion: plate.plateRegion },
         { ...plate, message: 'Hello' },
       ]) {
         await lookup(sender, invalid).expect(400);
@@ -203,6 +281,94 @@ describe.runIf(process.env.AUTH_TEST_POSTGRES === '1')(
       expect(await threads(owner)).toEqual([]);
       await api('delete', '/vehicles/' + id, owner).expect(204);
       await lookup(sender, plate).expect(200, { registered: false });
+    });
+
+    it('scopes compact lookup to Mexico and delivers only for the authenticated lookup caller', async () => {
+      const compact = { plate: vehicle.plate };
+      await lookup(undefined, compact).expect(401);
+      await api('post', '/vehicles', outsider)
+        .send({ ...another, ...compact, plateCountry: 'US', plateRegion: 'CA' })
+        .expect(201);
+      await lookup(sender, compact).expect(200, { registered: false });
+      await register();
+      await lookup(sender, { plate: 'AB12' }).expect(200, {
+        registered: false,
+      });
+      const contactToken = await plateToken();
+      await send(outsider, { contactToken }).expect(202, receipt);
+      await send(sender, { contactToken, vin: vehicle.vin }).expect(400);
+      await send(sender, { contactToken: 'invalid' }).expect(202, receipt);
+      expect(await threads(owner)).toEqual([]);
+      await send(sender, {
+        contactToken,
+        message: 'How long will you be charging?',
+      }).expect(202, receipt);
+      const owned = await threads(owner);
+      expect(owned).toHaveLength(1);
+      const read = await api('get', inbox + '/' + owned[0].id, owner).expect(
+        200,
+      );
+      expect(read.body.messages[0].body).toBe('How long will you be charging?');
+      expect(await threads(outsider)).toEqual([]);
+      expect(await threads(sender)).toEqual([]);
+    });
+
+    it('suppresses ambiguous plates even when one registration is opted out', async () => {
+      await register();
+      const contactToken = await plateToken();
+      const duplicate = await api('post', '/vehicles', outsider)
+        .send({ ...another, plate: vehicle.plate, plateRegion: 'JAL' })
+        .expect(201);
+      const compact = { plate: vehicle.plate };
+      await lookup(sender, compact).expect(200, { registered: false });
+      await send(sender, { contactToken }).expect(202, receipt);
+      await pool.query(
+        'UPDATE contact_vehicles SET accepts_contact=false WHERE id=$1',
+        [duplicate.body.id],
+      );
+      await lookup(sender, compact).expect(200, { registered: false });
+      await send(sender, { contactToken }).expect(202, receipt);
+      expect(await threads(owner)).toEqual([]);
+      expect(await threads(outsider)).toEqual([]);
+      await send(sender, plate).expect(202, receipt);
+      expect(await threads(owner)).toHaveLength(1);
+    });
+
+    it('honors opt-outs and never retargets an old lookup after vehicle replacement', async () => {
+      const id = await register();
+      const contactToken = await plateToken();
+      await pool.query(
+        'UPDATE contact_vehicles SET accepts_contact=false WHERE id=$1',
+        [id],
+      );
+      await lookup(sender, { plate: vehicle.plate }).expect(200, {
+        registered: false,
+      });
+      await send(sender, { contactToken }).expect(202, receipt);
+      await api('delete', '/vehicles/' + id, owner).expect(204);
+      await api('post', '/vehicles', outsider).send(vehicle).expect(201);
+      await send(sender, { contactToken }).expect(202, receipt);
+      expect(await threads(owner)).toEqual([]);
+      expect(await threads(outsider)).toEqual([]);
+      await send(sender, { contactToken: await plateToken() }).expect(
+        202,
+        receipt,
+      );
+      expect(await threads(outsider)).toHaveLength(1);
+    });
+
+    it('expires contact tokens without revealing delivery status', async () => {
+      await register();
+      const contactToken = await plateToken();
+      const clock = vi
+        .spyOn(Date, 'now')
+        .mockReturnValue(Date.now() + 10 * 60 * 1000);
+      try {
+        await send(sender, { contactToken }).expect(202, receipt);
+        expect(await threads(owner)).toEqual([]);
+      } finally {
+        clock.mockRestore();
+      }
     });
 
     it('preserves legacy opt-outs for both identifiers until the owner re-registers', async () => {

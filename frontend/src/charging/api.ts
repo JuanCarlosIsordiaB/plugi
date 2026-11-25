@@ -14,6 +14,13 @@ export const reportStatuses: ReportStatus[] = ['available', 'occupied', 'out_of_
 export function isReportStatus(value: unknown): value is ReportStatus {
   return reportStatuses.includes(value as ReportStatus);
 }
+export const defaultReportDuration = 30;
+export const maxReportDuration = 720;
+export function parseReportDuration(value: unknown) {
+  if (typeof value !== 'string' || !/^\d{1,3}$/.test(value)) return undefined;
+  const duration = Number(value);
+  return duration >= 1 && duration <= maxReportDuration ? duration : undefined;
+}
 export interface Station {
   id: string;
   name: string;
@@ -21,6 +28,8 @@ export interface Station {
   latitude: number;
   longitude: number;
   latestReportAt: string | null;
+  statusAsOf: string;
+  nextStatusChangeAt: string | null;
   counts: Record<Status, number>;
 }
 export interface Charger {
@@ -31,6 +40,8 @@ export interface Charger {
   connectorTypes: string[];
   status: Status;
   latestReportAt: string | null;
+  occupiedUntil: string | null;
+  availableByTimer: boolean;
 }
 export interface StationDetail extends Station {
   chargers: Charger[];
@@ -137,10 +148,10 @@ export async function signOut() {
   await authenticated('/auth/logout', { method: 'POST' });
   if (identity === sessionNumber) { sessionNumber++; setTokens(null); }
 }
-export function submitReport(id: string, charger: string, status: ReportStatus) {
-  return authenticated<{ id: string; chargerId: string; reportedAt: string; status: ReportStatus }>(
+export function submitReport(id: string, charger: string, status: ReportStatus, durationMinutes?: number) {
+  return authenticated<{ id: string; chargerId: string; reportedAt: string; status: ReportStatus; occupiedUntil: string | null }>(
     '/stations/' + encodeURIComponent(id) + '/chargers/' + encodeURIComponent(charger) + '/reports',
-    jsonRequest('POST', { status }),
+    jsonRequest('POST', { status, durationMinutes: status === 'occupied' ? durationMinutes : undefined }),
   );
 }
 

@@ -6,10 +6,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { PoolClient } from 'pg';
+import { AuthSecrets } from '../auth/credentials.js';
 import { Sessions } from '../auth/session.service.js';
 import { bodyFields } from '../auth/input.js';
 import { consumeBudget, limited } from './contact-budget.js';
 import { initiation, lookupIdentifier, messageBody } from './input.js';
+import {
+  issueContactToken,
+  readContactToken,
+  uniqueMexicanRegistration,
+} from './plate-contact.js';
 
 interface Conversation {
   initiator: string;
@@ -26,7 +32,10 @@ const messageCols = 'id,body,created_at AS "createdAt"';
 
 async function registeredOwner(
   client: PoolClient,
-  target: ReturnType<typeof lookupIdentifier>,
+  target: Exclude<
+    ReturnType<typeof lookupIdentifier>,
+    { mexicanPlate: string }
+  >,
 ) {
   // Honor historical opt-outs until the owner removes and re-registers the vehicle.
   const select =
@@ -93,7 +102,10 @@ async function deliver(
 
 @Injectable()
 export class Conversations {
-  constructor(@Inject(Sessions) private readonly sessions: Sessions) {}
+  constructor(
+    @Inject(Sessions) private readonly sessions: Sessions,
+    @Inject(AuthSecrets) private readonly secrets: AuthSecrets,
+  ) {}
 
   private async chargeSender(
     header: string | undefined,
@@ -126,9 +138,36 @@ export class Conversations {
     );
     if (!allowed) limited();
     const target = lookupIdentifier(input);
-    return this.sessions.authenticated(header, async (client) => ({
-      registered: Boolean(await registeredOwner(client, target)),
-    }));
+    return this.sessions.authenticated(header, async (client, user) => {
+      if ('mexicanPlate' in target) {
+        const registration = await uniqueMexicanRegistration(
+          client,
+          target.mexicanPlate,
+        );
+        if (!registration) return { registered: false };
+        return {
+          registered: true,
+          contactToken: issueContactToken(
+            this.secrets,
+            user.id,
+            registration.id,
+            target.mexicanPlate,
+          ),
+        };
+      }
+      return { registered: Boolean(await registeredOwner(client, target)) };
+    });
+  }
+
+  private async tokenRecipient(
+    client: PoolClient,
+    token: string,
+    caller: string,
+  ) {
+    const claim = readContactToken(this.secrets, token, caller);
+    if (!claim) return;
+    const current = await uniqueMexicanRegistration(client, claim.plate);
+    if (current?.id === claim.registration) return current.owner_id;
   }
 
   async start(header: string | undefined, input: unknown) {
@@ -136,7 +175,10 @@ export class Conversations {
     const { target, message } = initiation(input);
     await this.sessions.authenticated(header, async (client, user) => {
       await this.requireSending(client, user.id);
-      const recipient = await registeredOwner(client, target);
+      const recipient =
+        'contactToken' in target
+          ? await this.tokenRecipient(client, target.contactToken, user.id)
+          : await registeredOwner(client, target);
       if (!recipient || recipient === user.id) return;
       await pairLock(client, user.id, recipient);
       if (!(await canDeliver(client, user.id, recipient))) return;

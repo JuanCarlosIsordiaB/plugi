@@ -8,6 +8,7 @@ import {
 import { Sessions } from '../auth/session.service.js';
 import { consumeBudget, limited } from './contact-budget.js';
 import { registration } from './input.js';
+import { lockMexicanPlate } from './plate-contact.js';
 
 const columns =
   'id, vin, plate, plate_country AS "plateCountry", plate_region AS "plateRegion"';
@@ -42,10 +43,14 @@ export class Vehicles {
     if (!allowed) limited();
     const vehicle = registration(input);
     return this.sessions.authenticated(header, async (client, user) => {
+      if (vehicle.plateCountry === 'MX')
+        await lockMexicanPlate(client, vehicle.plate);
       const result = await client.query<Vehicle>(
         `INSERT INTO contact_vehicles(id,owner_id,vin,plate,plate_country,plate_region)
-         VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING RETURNING ` +
-          columns,
+         SELECT $1,$2,$3,$4,$5,$6 WHERE NOT EXISTS (
+           SELECT 1 FROM contact_vehicles WHERE $5='MX' AND plate_country='MX'
+             AND plate=$4 AND ($6='' OR plate_region='')
+         ) ON CONFLICT DO NOTHING RETURNING ` + columns,
         [
           randomUUID(),
           user.id,

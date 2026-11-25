@@ -55,14 +55,10 @@ function charger(input: unknown) {
   };
 }
 
+const stationFields = ['name', 'address', 'latitude', 'longitude', 'chargers'];
+
 export function stationInput(input: unknown) {
-  const data = bodyFields(input, [
-    'name',
-    'address',
-    'latitude',
-    'longitude',
-    'chargers',
-  ]);
+  const data = bodyFields(input, stationFields);
   if (
     !Array.isArray(data.chargers) ||
     data.chargers.length < 1 ||
@@ -79,17 +75,75 @@ export function stationInput(input: unknown) {
 }
 export type StationInput = ReturnType<typeof stationInput>;
 
-export function reportStatus(input: unknown) {
-  const { status } = bodyFields(input, ['status']);
+function stationSource(input: unknown) {
+  const data = bodyFields(input, ['provider', 'externalId', 'sourceUrl']);
+  const provider = plainText(data.provider, 'source provider', 32);
+  if (!/^[a-z0-9_]{1,32}$/.test(provider)) invalid('source provider');
+  const externalId = plainText(data.externalId, 'external source ID', 300);
+  const sourceUrl = plainText(data.sourceUrl, 'source URL', 2048);
+  const url = URL.parse(sourceUrl);
   if (
-    status === 'available' ||
-    status === 'occupied' ||
-    status === 'out_of_service'
+    !/^https?:\/\//i.test(sourceUrl) ||
+    /[\s\\]/u.test(sourceUrl) ||
+    !url?.hostname ||
+    url.username ||
+    url.password
   )
-    return status;
-  return invalid('report status');
+    invalid('source URL');
+  return { provider, externalId, sourceUrl };
 }
-export type ReportStatus = ReturnType<typeof reportStatus>;
+
+export function stationCreateInput(input: unknown) {
+  const { source, existingStationId, ...fields } = bodyFields(input, [
+    ...stationFields,
+    'source',
+    'existingStationId',
+  ]);
+  if (
+    existingStationId !== undefined &&
+    (source === undefined ||
+      typeof existingStationId !== 'string' ||
+      !/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i.test(
+        existingStationId,
+      ))
+  )
+    invalid('existing station ID');
+  return {
+    station: stationInput(fields),
+    source: source === undefined ? undefined : stationSource(source),
+    existingStationId: existingStationId?.toLowerCase(),
+  };
+}
+export type StationCreateInput = ReturnType<typeof stationCreateInput>;
+
+export type ReportStatus = 'available' | 'occupied' | 'out_of_service';
+export interface ReportInput {
+  status: ReportStatus;
+  durationMinutes?: number;
+}
+
+export function reportInput(input: unknown): ReportInput {
+  const { status, durationMinutes } = bodyFields(input, [
+    'status',
+    'durationMinutes',
+  ]);
+  if (
+    status !== 'available' &&
+    status !== 'occupied' &&
+    status !== 'out_of_service'
+  )
+    invalid('report status');
+  if (durationMinutes === undefined) return { status };
+  if (
+    status !== 'occupied' ||
+    typeof durationMinutes !== 'number' ||
+    !Number.isInteger(durationMinutes) ||
+    durationMinutes < 1 ||
+    durationMinutes > 720
+  )
+    invalid('duration (use 1 to 720 whole minutes with occupied status)');
+  return { status, durationMinutes };
+}
 
 export function reviewDecision(input: unknown) {
   const { decision } = bodyFields(input, ['decision']);
@@ -99,7 +153,14 @@ export function reviewDecision(input: unknown) {
 
 export function stationFilter(input: unknown) {
   const bounds = ['south', 'west', 'north', 'east'] as const;
-  const data = bodyFields(input, [...bounds, 'limit']);
+  const data = bodyFields(input, [...bounds, 'limit', 'includeChargers']);
+  const includeChargers = data.includeChargers;
+  if (
+    includeChargers !== undefined &&
+    includeChargers !== 'true' &&
+    includeChargers !== 'false'
+  )
+    invalid('includeChargers (use true or false)');
   const limit = data.limit === undefined ? '100' : data.limit;
   if (
     typeof limit !== 'string' ||
@@ -129,6 +190,7 @@ export function stationFilter(input: unknown) {
     west: bound('west', 180),
     east: bound('east', 180),
     limit: Number(limit),
+    includeChargers: includeChargers === 'true',
   };
 }
 export type StationFilter = ReturnType<typeof stationFilter>;

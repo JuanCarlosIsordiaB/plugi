@@ -43,32 +43,22 @@ export function useAction() {
   return { run, pending, error, clearError: () => setError('') };
 }
 
-export type Plate = { plate: string; plateCountry: string; plateRegion: string };
-export type VehicleInput = Plate & { vin: string };
-
-export function readIdentifier(form: HTMLFormElement) {
-  const data = new FormData(form);
-  const field = (name: string) => String(data.get(name) ?? '').trim().toUpperCase().replace(/[ -]/g, '');
-  return { vin: field('vin'), plate: field('plate'), plateCountry: field('plateCountry'), plateRegion: field('plateRegion') };
+export function normalizeIdentifier(value: string) {
+  return value.trim().toUpperCase().replace(/[ -]/g, '');
 }
 
-export function IdentifierFields({ method }: { method: 'vin' | 'plate' | 'both' }) {
-  return <>
-    {method !== 'vin' && <>
-      <label>License plate<input name="plate" required autoCapitalize="characters" maxLength={48}
-        pattern={String.raw`[ \-]*([a-zA-Z0-9][ \-]*){1,12}`} title="Use 1 to 12 letters or numbers. Spaces and hyphens are allowed." /></label>
-      <div className="bc-columns">
-        <label>Country code<input name="plateCountry" required autoCapitalize="characters" maxLength={2}
-          pattern="[a-zA-Z]{2}" title="Enter the two-letter issuing country code." placeholder="e.g. MX" /></label>
-        <label>Issuing region code<input name="plateRegion" required autoCapitalize="characters" maxLength={48}
-          pattern={String.raw`[ \-]*([a-zA-Z0-9][ \-]*){1,12}`} title="Use 1 to 12 letters or numbers." placeholder="e.g. JAL" /></label>
-      </div>
-    </>}
-    {method !== 'plate' && <label>Vehicle identification number (VIN)<input name="vin" required
-      autoCapitalize="characters" maxLength={48} pattern={String.raw`[ \-]*([a-hj-npr-zA-HJ-NPR-Z0-9][ \-]*){17}`}
-      title="Enter 17 VIN characters. I, O and Q are excluded." /></label>}
-  </>;
-}
+export const identifierFields = {
+  plate: {
+    label: 'License plate',
+    pattern: String.raw`[ \-]*([a-zA-Z0-9][ \-]*){1,12}`,
+    title: 'Use 1 to 12 letters or numbers. Spaces and hyphens are allowed.',
+  },
+  vin: {
+    label: 'Vehicle identification number (VIN)',
+    pattern: String.raw`[ \-]*([a-hj-npr-zA-HJ-NPR-Z0-9][ \-]*){17}`,
+    title: 'Enter 17 VIN characters. I, O and Q are excluded.',
+  },
+};
 
 export function MessageField({ label, value, onChange }: { label: string; value: string; onChange: (next: string) => void }) {
   return <label>{label}<input required name="message" value={value} maxLength={500} onChange={event => onChange(event.target.value)}

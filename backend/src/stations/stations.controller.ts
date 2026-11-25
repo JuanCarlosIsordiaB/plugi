@@ -13,8 +13,9 @@ import {
 } from '@nestjs/common';
 import { StationProposals } from './station-proposals.service.js';
 import {
-  reportStatus,
+  reportInput,
   reviewDecision,
+  stationCreateInput,
   stationFilter,
   stationInput,
 } from './station-input.js';
@@ -46,7 +47,7 @@ export class StationsController {
 
   @Post('stations')
   create(@Body() body: unknown, @Headers('authorization') header?: string) {
-    return this.stations.create(header, stationInput(body));
+    return this.stations.create(header, stationCreateInput(body));
   }
 
   @Post('stations/:id/chargers/:chargerId/reports')
@@ -56,7 +57,7 @@ export class StationsController {
     @Body() body: unknown,
     @Headers('authorization') header?: string,
   ) {
-    return this.stations.report(header, id, chargerId, reportStatus(body));
+    return this.stations.report(header, id, chargerId, reportInput(body));
   }
 
   @Post('station-proposals')

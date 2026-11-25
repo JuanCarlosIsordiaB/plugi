@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -12,7 +13,9 @@ import type { PoolClient } from 'pg';
 import { Sessions, type UserRow } from '../auth/session.service.js';
 import { DatabaseService } from '../database/database.service.js';
 import type {
+  ReportInput,
   ReportStatus,
+  StationCreateInput,
   StationFilter,
   StationInput,
 } from './station-input.js';
@@ -24,7 +27,11 @@ export function requireAdmin(user: UserRow) {
 
 export interface StationSummary extends Omit<StationInput, 'chargers'> {
   id: string;
+  access_type: 'public' | 'private' | 'restricted' | 'unknown';
+  pricing_type: 'free' | 'paid' | 'mixed' | 'unknown';
+  statusAsOf: Date;
   latestReportAt: Date | null;
+  nextStatusChangeAt: Date | null;
   counts: Record<ReportStatus | 'unreported', number>;
 }
 export interface StationDetail extends StationSummary {
@@ -32,17 +39,41 @@ export interface StationDetail extends StationSummary {
     id: string;
     status: ReportStatus | 'unreported';
     latestReportAt: string | null;
+    occupiedUntil: string | null;
+    availableByTimer: boolean;
   })[];
 }
 
+const stationColumns = `station.id, station.name, station.address, station.latitude,
+  station.longitude, station.access_type, station.pricing_type`;
+
 const availabilityColumns = `
+  statement_timestamp() AS "statusAsOf",
   max(c.reported_at) AS "latestReportAt",
+  min(c.occupied_until) AS "nextStatusChangeAt",
   jsonb_build_object(
     'available', count(*) FILTER (WHERE c.status='available'),
     'occupied', count(*) FILTER (WHERE c.status='occupied'),
     'out_of_service', count(*) FILTER (WHERE c.status='out_of_service'),
     'unreported', count(*) FILTER (WHERE c.status='unreported')
   ) AS counts`;
+
+const detailedAvailabilityColumns = `${availabilityColumns},
+  jsonb_agg(jsonb_build_object(
+    'id', c.id, 'label', c.label, 'latitude', c.latitude, 'longitude', c.longitude,
+    'connectorTypes', ARRAY(SELECT connector_type FROM charger_connectors
+      WHERE charger_id=c.id ORDER BY connector_type),
+    'status', c.status,
+    'availableByTimer', c.available_by_timer,
+    'occupiedUntil', to_char(c.occupied_until AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+    'latestReportAt', to_char(c.reported_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
+  ) ORDER BY c.position) AS chargers`;
+
+function pointInViewport(table: 'station' | 'charger') {
+  return `(${table}.latitude BETWEEN $1 AND $3
+    AND CASE WHEN $2::float8 <= $4::float8 THEN ${table}.longitude BETWEEN $2 AND $4
+             ELSE ${table}.longitude >= $2 OR ${table}.longitude <= $4 END)`;
+}
 
 @Injectable()
 export class Stations {
@@ -58,17 +89,31 @@ export class Stations {
     return rows;
   }
 
-  async list({ south, west, north, east, limit }: StationFilter) {
-    const { rows } = await this.db.query<StationSummary>(
+  async list({
+    south,
+    west,
+    north,
+    east,
+    limit,
+    includeChargers,
+  }: StationFilter) {
+    const columns = includeChargers
+      ? detailedAvailabilityColumns
+      : availabilityColumns;
+    const visibleCharger =
+      includeChargers && south !== null
+        ? `OR EXISTS (
+          SELECT 1 FROM station_chargers charger
+          WHERE charger.station_id=station.id AND ${pointInViewport('charger')}
+        )`
+        : '';
+    const { rows } = await this.db.query<StationSummary | StationDetail>(
       `SELECT s.*, a.* FROM (
-        SELECT * FROM charging_stations
-        WHERE ($1::float8 IS NULL OR latitude BETWEEN $1 AND $3)
-          AND ($2::float8 IS NULL OR
-            CASE WHEN $2 <= $4::float8 THEN longitude BETWEEN $2 AND $4
-                 ELSE longitude >= $2 OR longitude <= $4 END)
-        ORDER BY id LIMIT $5
+        SELECT ${stationColumns} FROM charging_stations station
+        WHERE $1::float8 IS NULL OR ${pointInViewport('station')} ${visibleCharger}
+        ORDER BY station.id LIMIT $5
       ) s CROSS JOIN LATERAL (
-        SELECT ${availabilityColumns}
+        SELECT ${columns}
         FROM charger_availability c WHERE c.station_id=s.id
       ) a ORDER BY s.id`,
       [south, west, north, east, limit],
@@ -77,17 +122,10 @@ export class Stations {
   }
 
   async detail(id: string, client?: PoolClient) {
-    const sql = `SELECT s.*, a.* FROM charging_stations s CROSS JOIN LATERAL (
-        SELECT ${availabilityColumns},
-          jsonb_agg(jsonb_build_object(
-            'id', c.id, 'label', c.label, 'latitude', c.latitude, 'longitude', c.longitude,
-            'connectorTypes', ARRAY(SELECT connector_type FROM charger_connectors
-              WHERE charger_id=c.id ORDER BY connector_type),
-            'status', c.status,
-            'latestReportAt', to_char(c.reported_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
-          ) ORDER BY c.position) AS chargers
-        FROM charger_availability c WHERE c.station_id=s.id
-      ) a WHERE s.id=$1`;
+    const sql = `SELECT ${stationColumns}, a.* FROM charging_stations station CROSS JOIN LATERAL (
+        SELECT ${detailedAvailabilityColumns}
+        FROM charger_availability c WHERE c.station_id=station.id
+      ) a WHERE station.id=$1`;
     const { rows } = client
       ? await client.query<StationDetail>(sql, [id])
       : await this.db.query<StationDetail>(sql, [id]);
@@ -134,10 +172,43 @@ export class Stations {
     return id;
   }
 
-  create(header: string | undefined, station: StationInput) {
+  create(
+    header: string | undefined,
+    { station, source, existingStationId }: StationCreateInput,
+  ) {
     return this.sessions.authenticated(header, async (client, user) => {
       requireAdmin(user);
-      return this.detail(await this.publish(client, station), client);
+      if (!source)
+        return this.detail(await this.publish(client, station), client);
+
+      const key = [source.provider, source.externalId];
+      // The key can be absent. Serialize the lookup and creation across importers.
+      await client.query(
+        'SELECT pg_advisory_xact_lock(hashtext($1), hashtext($2))',
+        key,
+      );
+      const { rows } = await client.query<{ station_id: string }>(
+        'SELECT station_id FROM station_sources WHERE provider=$1 AND external_id=$2',
+        key,
+      );
+      const linkedId = rows[0]?.station_id;
+      if (linkedId && existingStationId && linkedId !== existingStationId)
+        throw new ConflictException(
+          'Source listing is linked to a different station.',
+        );
+
+      const targetId = linkedId ?? existingStationId;
+      if (targetId) await this.validateConnectors(client, station);
+      if (linkedId) return this.detail(linkedId, client);
+
+      const stationId = targetId ?? (await this.publish(client, station));
+      const link = await client.query(
+        `INSERT INTO station_sources (provider, external_id, source_url, station_id)
+         SELECT $1, $2, $3, id FROM charging_stations WHERE id=$4 FOR KEY SHARE`,
+        [...key, source.sourceUrl, stationId],
+      );
+      if (!link.rowCount) throw new NotFoundException('Station unavailable.');
+      return this.detail(stationId, client);
     });
   }
 
@@ -145,7 +216,7 @@ export class Stations {
     header: string | undefined,
     stationId: string,
     chargerId: string,
-    status: ReportStatus,
+    { status, durationMinutes }: ReportInput,
   ) {
     return this.sessions.authenticated(header, async (client, user) => {
       const charger = await client.query(
@@ -171,10 +242,12 @@ export class Stations {
         chargerId: string;
         status: ReportStatus;
         reportedAt: Date;
+        occupiedUntil: Date | null;
       }>(
-        `INSERT INTO charger_reports (charger_id,reporter_id,status) VALUES ($1,$2,$3)
-         RETURNING id, charger_id AS "chargerId", status, reported_at AS "reportedAt"`,
-        [chargerId, user.id, status],
+        `INSERT INTO charger_reports (charger_id,reporter_id,status,duration_minutes) VALUES ($1,$2,$3,$4)
+         RETURNING id, charger_id AS "chargerId", status, reported_at AS "reportedAt",
+           reported_at + duration_minutes * interval '1 minute' AS "occupiedUntil"`,
+        [chargerId, user.id, status, durationMinutes ?? null],
       );
       return result.rows[0];
     });

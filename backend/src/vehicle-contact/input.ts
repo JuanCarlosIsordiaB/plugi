@@ -16,9 +16,12 @@ function normalized(value: unknown, name: string, pattern: RegExp) {
 function vin(value: unknown) {
   return normalized(value, 'VIN', /^[A-HJ-NPR-Z0-9]{17}$/);
 }
+function plateNumber(value: unknown) {
+  return normalized(value, 'plate', /^[A-Z0-9]{1,12}$/);
+}
 function plate(data: Record<string, unknown>) {
   return {
-    plate: normalized(data.plate, 'plate', /^[A-Z0-9]{1,12}$/),
+    plate: plateNumber(data.plate),
     plateCountry: normalized(data.plateCountry, 'plate country', /^[A-Z]{2}$/),
     plateRegion: normalized(
       data.plateRegion,
@@ -29,10 +32,12 @@ function plate(data: Record<string, unknown>) {
 }
 export function registration(input: unknown) {
   const data = bodyFields(input, ['vin', ...plateKeys]);
-  return {
-    vin: vin(data.vin),
-    ...plate(data),
-  };
+  const jurisdictionOmitted =
+    data.plateCountry === undefined && data.plateRegion === undefined;
+  const identifier = jurisdictionOmitted
+    ? { plate: plateNumber(data.plate), plateCountry: 'MX', plateRegion: '' }
+    : plate(data);
+  return { vin: vin(data.vin), ...identifier };
 }
 export function messageBody(value: unknown) {
   const text = stringField(value, 'message', 500);
@@ -56,12 +61,30 @@ function identifier(data: Record<string, unknown>) {
   return plate(data);
 }
 export function lookupIdentifier(input: unknown) {
-  return identifier(bodyFields(input, ['vin', ...plateKeys]));
+  const data = bodyFields(input, ['vin', ...plateKeys]);
+  if (Object.keys(data).length === 1 && data.plate !== undefined)
+    return { mexicanPlate: plateNumber(data.plate) };
+  return identifier(data);
 }
 export function initiation(input: unknown) {
-  const data = bodyFields(input, ['vin', ...plateKeys, 'message']);
+  const data = bodyFields(input, [
+    'vin',
+    ...plateKeys,
+    'contactToken',
+    'message',
+  ]);
+  if (
+    data.contactToken !== undefined &&
+    ['vin', ...plateKeys].some((key) => data[key] !== undefined)
+  )
+    throw new BadRequestException('Use one vehicle identifier.');
   return {
-    target: identifier(data),
+    target:
+      data.contactToken === undefined
+        ? identifier(data)
+        : {
+            contactToken: stringField(data.contactToken, 'contact token', 512),
+          },
     message:
       data.message === undefined ? defaultMessage : messageBody(data.message),
   };

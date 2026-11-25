@@ -3,8 +3,12 @@
 ## Current state
 
 buscaPila has two independent TypeScript applications in one Git repository.
-Expo web provides a Leaflet charging map, station details, community reports and proposals, account access, vehicle registration, and private charging conversations. The native target currently displays the buscaPila placeholder. The API exposes GET / returning Hello World!.
+Expo web provides a Leaflet charging map, station details, community reports and proposals, account access, vehicle registration, and private charging conversations. The station drawer shows either map results or the selected station's charger details while the map stays mounted. On narrow screens, charger details fill the visible viewport and returning restores the station list. The native target currently displays the buscaPila placeholder. The API exposes GET / returning Hello World!.
 PostgreSQL 18 is configured locally with Docker Compose and connected to NestJS through a node-postgres pool. Startup performs SELECT 1, and db:check verifies a real connection. The backend provides first-party authentication, community charging status, station proposal review, vehicle registration, authenticated exact-match vehicle lookup, and private charging messages. The mobile client integration and production deployment are pending.
+
+Timed occupancy reports store their duration and report time in PostgreSQL. Station reads derive availability from the latest report and the database clock. Expo web displays the countdown and refreshes station results at the next expiration while retaining the map view.
+
+At lower zoom levels, the web map groups nearby stations and labels each group with its charger total. At high zoom, the same viewport request can include charger details so the map can place individual chargers with known coordinates. The station pin represents chargers with no mapped position, and overlapping points share a marker that opens the corresponding station results.
 
 ## System diagram
 
@@ -32,6 +36,7 @@ flowchart LR
     Web --> Auth
     Mobile -. Planned native authentication .-> Auth
     Module --> Stations[StationsModule]
+    StationImport[San Luis Potosí import CLI] -->|Administrator POST| Stations
     Module --> Contact[VehicleContactModule]
     Stations --> Pool
     Contact --> Pool
@@ -45,7 +50,13 @@ flowchart LR
 
 This shows logical ownership and calls. The existing API uses port 3000 by default. Local browser requests use an explicit loopback CORS origin, and access and refresh tokens live in browser memory for the life of the page. On request, the browser position centers the map and sorts stations by distance. API and tile requests use the viewed area.
 A physical phone must use the PC's reachable network address rather than localhost. PostgreSQL is bound only to 127.0.0.1 (port 5433 on this workstation). The phone never receives database credentials or connects to PostgreSQL directly. Versioned migrations create the authentication, charging catalog, and vehicle contact schema. See the API contracts for [authentication](api/auth.md), [charging and station proposals](api/charging.md), and [vehicles and messages](api/vehicle-contact.md).
+
+The web contact screen looks up a vehicle by VIN or Mexican plate through the authenticated API. For a unique plate registration, the API issues an expiring opaque token that binds the subsequent message to the requesting account and the same registration. The vehicle contact module uses the auth module's existing token encryption service for this binding.
+
+The web registration form sends a Mexican plate and VIN. The API records the issuing region as unknown. Mexican plate registration, plate-only lookup, and token-based delivery for the same plate share a transaction lock.
 The mobile app targets iOS and Android; an Android JavaScript export has passed, but this is not native/device verification.
+
+The [station catalog import CLI](STATION_CATALOG_IMPORT.md) submits validated source listings through the administrator station route. PostgreSQL stores external listing identities in `station_sources` and links them to charging stations so retries can resolve to the original station.
 
 ## Agent workflow
 

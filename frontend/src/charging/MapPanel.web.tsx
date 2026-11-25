@@ -1,7 +1,8 @@
-import type { LatLngTuple, Map as LeafletMap } from 'leaflet';
+import type { LatLng, LatLngTuple, Map as LeafletMap, Point, PointTuple } from 'leaflet';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
-import type { Station, Status } from './api';
+import { statusLabels, type Station, type Status } from './api';
+import { type StationStatusClock, watchRemainingTime } from './stationStatus.web';
 
 export interface Pin {
   id: string;
@@ -9,28 +10,232 @@ export interface Pin {
   latitude: number;
   longitude: number;
   number?: number;
+  stationId?: string;
   status?: Status;
   counts?: Station['counts'];
+  nextStatusChangeAt?: string | null;
 }
 export function stationAvailability(counts: Station['counts']) {
-  if (counts.available) return { status: 'available', label: counts.available + ' reported available' };
+  if (counts.available) return { status: 'available', label: counts.available + ' available' };
   if (counts.occupied && !counts.unreported && !counts.out_of_service) return { status: 'occupied', label: 'Occupied' };
   if (counts.out_of_service && !counts.unreported && !counts.occupied) return { status: 'out_of_service', label: 'Out of service' };
-  if (counts.occupied || counts.out_of_service) return { status: 'unreported', label: '0 reported available' };
+  if (counts.occupied || counts.out_of_service) return { status: 'unreported', label: '0 available' };
   return { status: 'unreported', label: counts.unreported ? 'No reports' : 'No chargers' };
 }
 export interface Camera { center: LatLngTuple; zoom: number }
 export const initialCamera: Camera = { center: [19.418, -99.168], zoom: 13 };
+export const chargerPinZoom = 15;
+const clusterRadius = 72;
+const detailPinWidth = 116;
+const detailPinHeight = 58;
+const detailPinSpacingX = detailPinWidth + 4;
+const detailPinSpacingY = detailPinHeight + 8;
+
+function pinPosition(pin: Pin, centerLongitude: number): LatLngTuple {
+  const longitude = pin.longitude + 360 * Math.round((centerLongitude - pin.longitude) / 360);
+  return [pin.latitude, longitude];
+}
+
+function pinChargerCount(pin: Pin) {
+  return pin.stationId ? 1 : Object.values(pin.counts ?? {}).reduce((sum, value) => sum + value, 0);
+}
+
+function chargerCountLabel(count: number) {
+  return count + (count === 1 ? ' charger' : ' chargers');
+}
+
+function groupStatus(pins: Pin[]) {
+  const counts: Station['counts'] = { available: 0, occupied: 0, out_of_service: 0, unreported: 0 };
+  for (const pin of pins) {
+    if (pin.counts) {
+      counts.available += pin.counts.available;
+      counts.occupied += pin.counts.occupied;
+      counts.out_of_service += pin.counts.out_of_service;
+      counts.unreported += pin.counts.unreported;
+    } else if (pin.status) counts[pin.status]++;
+  }
+  return stationAvailability(counts).label;
+}
+
+function appendPinLabels(face: HTMLElement, title: string, status: string) {
+  const heading = document.createElement('span');
+  heading.className = 'bp-map-pin-heading';
+  heading.textContent = title;
+  const subtitle = document.createElement('span');
+  subtitle.className = 'bp-map-pin-status';
+  subtitle.textContent = status;
+  face.append(heading, subtitle);
+  return subtitle;
+}
+
+interface PinGroup {
+  point: Point;
+  pins: Pin[];
+}
+
+function stationGroups(map: LeafletMap, pins: Pin[]): PinGroup[] {
+  const groups: PinGroup[] = [];
+  const center = map.getCenter().lng;
+  for (const pin of pins) {
+    const point = map.latLngToLayerPoint(pinPosition(pin, center));
+    let nearest: PinGroup | undefined;
+    let distance = clusterRadius;
+    for (const group of groups) {
+      const separation = group.point.distanceTo(point);
+      if (separation <= distance) {
+        distance = separation;
+        nearest = group;
+      }
+    }
+    if (!nearest) {
+      groups.push({ point, pins: [pin] });
+      continue;
+    }
+    const count = nearest.pins.length;
+    nearest.point = nearest.point.multiplyBy(count).add(point).divideBy(count + 1);
+    nearest.pins.push(pin);
+  }
+  return groups;
+}
+
+function overlappingPinGroups(map: LeafletMap, pins: Pin[]) {
+  const center = map.getCenter().lng;
+  const projected = pins.map(pin => {
+    const point = map.latLngToLayerPoint(pinPosition(pin, center));
+    return { pin, point, x: Math.floor(point.x / detailPinSpacingX), y: Math.floor(point.y / detailPinSpacingY) };
+  });
+  const key = (x: number, y: number) => x + ':' + y;
+  const cells = new Map<string, Set<typeof projected[number]>>();
+  for (const item of projected) {
+    const id = key(item.x, item.y);
+    if (!cells.has(id)) cells.set(id, new Set());
+    cells.get(id)?.add(item);
+  }
+  const groups: Pin[][] = [];
+  const remaining = new Set(projected);
+  for (const first of remaining) {
+    const connected = [first];
+    remaining.delete(first);
+    cells.get(key(first.x, first.y))?.delete(first);
+    for (const item of connected) {
+      for (let x = item.x - 1; x <= item.x + 1; x++) {
+        for (let y = item.y - 1; y <= item.y + 1; y++) {
+          const neighbors = cells.get(key(x, y));
+          if (!neighbors) continue;
+          for (const neighbor of neighbors) {
+            if (Math.abs(item.point.x - neighbor.point.x) >= detailPinSpacingX ||
+                Math.abs(item.point.y - neighbor.point.y) >= detailPinSpacingY) continue;
+            connected.push(neighbor);
+            remaining.delete(neighbor);
+            neighbors.delete(neighbor);
+          }
+        }
+      }
+    }
+    groups.push(connected.map(item => item.pin));
+  }
+  return groups;
+}
+
+function addCluster(
+  L: typeof import('leaflet'), map: LeafletMap, markers: import('leaflet').LayerGroup,
+  group: Pin[], center: LatLng | LatLngTuple, openResults?: (keyboard: boolean) => void, clock?: StationStatusClock,
+) {
+  const count = group.reduce((total, pin) => total + pinChargerCount(pin), 0);
+  const chargers = chargerCountLabel(count);
+  const label = (openResults ? 'Show station results for ' : 'Zoom in on ') + chargers;
+  const face = document.createElement('span');
+  face.className = 'bp-pin-cluster' + (openResults ? ' bp-pin-overlap' : '');
+  const availability = openResults ? groupStatus(group) : undefined;
+  if (availability) appendPinLabels(face, chargers, availability);
+  else face.textContent = chargers;
+  const iconSize: PointTuple = openResults ? [detailPinWidth, detailPinHeight] : [44, 44];
+  const marker = L.marker(center, {
+    icon: L.divIcon({ className: 'bp-marker bp-pill-marker', html: face, iconSize, iconAnchor: [iconSize[0] / 2, iconSize[1] / 2] }),
+    title: label, alt: label, autoPanOnFocus: false,
+  }).addTo(markers);
+  const zoomIn = () => {
+    const bounds = L.latLngBounds(group.map(pin => pinPosition(pin, L.latLng(center).lng)));
+    const fit = map.getBoundsZoom(bounds, false, L.point(100, 100));
+    const zoom = Math.min(chargerPinZoom, Math.max(map.getZoom() + 2, fit));
+    map.setView(center, zoom, { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
+  };
+  marker.on('click', () => openResults ? openResults(false) : zoomIn());
+  const element = marker.getElement();
+  if (element) {
+    element.dataset.cluster = (openResults ? 'charger:' : 'station:') + group.map(pin => pin.id).sort().join(',');
+    if (openResults) element.dataset.chargerGroup = 'true';
+    element.setAttribute('aria-label', label);
+    if (availability) element.setAttribute('aria-description', availability + '.');
+    element.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (openResults) openResults(true);
+      else {
+        map.getContainer().focus({ preventScroll: true });
+        zoomIn();
+      }
+    });
+  }
+  let nextEstimate: string | undefined;
+  if (openResults && clock) {
+    for (const { nextStatusChangeAt } of group) {
+      if (nextStatusChangeAt && (!nextEstimate || nextStatusChangeAt < nextEstimate)) nextEstimate = nextStatusChangeAt;
+    }
+  }
+  const stopEstimate = element && clock && nextEstimate ?
+    showPinEstimate(face, element, nextEstimate, clock, { compact: true }) : undefined;
+  return { element, stopEstimate };
+}
+
+function showPinEstimate(face: HTMLElement, marker: HTMLElement, until: string, clock: StationStatusClock, {
+  statusLabel, compact,
+}: { statusLabel?: Text; compact: boolean }) {
+  const badge = document.createElement('time');
+  badge.className = 'bp-pin-timer ' + (compact ? 'bp-pin-timer-inline' : statusLabel ? 'bp-pin-timer-primary' : 'bp-pin-timer-secondary');
+  badge.dateTime = until;
+  badge.setAttribute('aria-hidden', 'true');
+  const baseDescription = marker.getAttribute('aria-description');
+  return watchRemainingTime(until, clock, seconds => {
+    const active = badge.parentElement === face;
+    if (!seconds) {
+      if (active) {
+        if (statusLabel) badge.replaceWith(statusLabel);
+        else badge.remove();
+        if (baseDescription) marker.setAttribute('aria-description', baseDescription);
+        else marker.removeAttribute('aria-description');
+      }
+      return;
+    }
+    const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const remainder = String(seconds % 60).padStart(2, '0');
+    const prefix = compact ? 'Next in ' : statusLabel ? '1 available in ' : '1 more in ';
+    const text = prefix + minutes + ':' + remainder;
+    if (badge.textContent !== text) badge.textContent = text;
+    if (!active) {
+      if (statusLabel) statusLabel.replaceWith(badge);
+      else face.append(badge);
+      const endTime = new Date(until).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium' });
+      marker.setAttribute('aria-description', (baseDescription ? baseDescription + ' ' : '') + 'Next occupied estimate ends at ' + endTime + '.');
+    }
+  }, { everySecond: true });
+}
+
 interface Props {
   camera: Camera;
   position?: LatLngTuple;
   pins: Pin[];
   selected?: string;
+  inert?: boolean;
+  clock?: StationStatusClock;
+  clusterStations?: boolean;
   onSelect?: (id: string, keyboard: boolean) => void;
+  onSelectGroup?: (stationIds: string[], keyboard: boolean) => void;
   onMove?: (camera: Camera, query: string) => void;
 }
 
-export default function MapPanel({ camera, pins, position, selected, onSelect, onMove }: Props) {
+export default function MapPanel({ camera, pins, position, selected, inert, clock, clusterStations = false, onSelect, onSelectGroup, onMove }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const centeredPosition = useRef<LatLngTuple | undefined>(undefined);
   const focusedPin = useRef<string | undefined>(undefined);
@@ -39,6 +244,10 @@ export default function MapPanel({ camera, pins, position, selected, onSelect, o
   const [attempt, setAttempt] = useState(0);
   const initialView = useEffectEvent(() => camera);
   const select = useEffectEvent((id: string, keyboard: boolean) => onSelect?.(id, keyboard));
+  const selectGroup = useEffectEvent((ids: string[], keyboard: boolean) => {
+    if (ids.length > 1 && onSelectGroup) onSelectGroup(ids, keyboard);
+    else onSelect?.(ids[0], keyboard);
+  });
   const publish = useEffectEvent((map: LeafletMap) => {
     const bounds = map.getBounds();
     const world = bounds.getEast() - bounds.getWest() >= 360;
@@ -97,57 +306,102 @@ export default function MapPanel({ camera, pins, position, selected, onSelect, o
   }, [loaded, position]);
 
   const interactive = !!onSelect;
+  const zoom = camera.zoom;
   useEffect(() => {
     if (!loaded) return;
     const { L, map } = loaded;
     const markers = L.layerGroup().addTo(map);
-    for (const pin of pins) {
+    const stopEstimates: (() => void)[] = [];
+    function restoreFocus(element: HTMLElement, key?: string) {
+      if (key && focusedPin.current === key && document.activeElement === document.body) element.focus({ preventScroll: true });
+    }
+    const compact = clusterStations && zoom >= chargerPinZoom;
+    const singlePins = compact ? overlappingPinGroups(map, pins).flatMap(group => {
+      if (group.length === 1) return group;
+      const anchor = group.find(pin => pin.stationId) ?? group[0];
+      const stationIds = [...new Set(group.map(pin => pin.stationId ?? pin.id))];
+      const { element, stopEstimate } = addCluster(L, map, markers, group, pinPosition(anchor, map.getCenter().lng),
+        keyboard => selectGroup(stationIds, keyboard), clock);
+      if (element) restoreFocus(element, element.dataset.cluster);
+      if (stopEstimate) stopEstimates.push(stopEstimate);
+      return [];
+    }) : clusterStations ? stationGroups(map, pins).flatMap(group => {
+      if (group.pins.length === 1) return group.pins;
+      const { element } = addCluster(L, map, markers, group.pins, map.layerPointToLatLng(group.point));
+      if (element) restoreFocus(element, element.dataset.cluster);
+      return [];
+    }) : pins;
+    for (const pin of singlePins) {
       const face = document.createElement('span');
-      const availability = pin.counts ? stationAvailability(pin.counts) : undefined;
-      face.className = 'bp-pin ' + (availability?.status ?? pin.status ?? '') + (selected === pin.id ? ' selected' : '');
+      const availability = pin.counts ? stationAvailability(pin.counts) :
+        pin.stationId && pin.status ? { status: pin.status, label: statusLabels[pin.status] } : undefined;
+      let statusLabel: Text | undefined;
+      const stationId = pin.stationId ?? pin.id;
+      const current = selected === stationId;
+      face.className = 'bp-pin ' + (availability?.status ?? pin.status ?? '') + (current ? ' selected' : '');
       if (availability) {
         face.classList.add('bp-pin-pill');
         const dot = document.createElement('i');
         dot.setAttribute('aria-hidden', 'true');
-        face.append(dot, availability.label);
+        if (compact) {
+          face.classList.add('bp-compact-pin');
+          if (pin.stationId) face.classList.add('bp-charger-pill');
+          const title = pin.stationId ? 'Charger ' + pin.number : chargerCountLabel(pinChargerCount(pin));
+          appendPinLabels(face, title, availability.label).prepend(dot);
+        } else {
+          statusLabel = document.createTextNode(availability.label);
+          face.append(dot, statusLabel);
+        }
       } else if (pin.number) face.textContent = String(pin.number).padStart(2, '0');
       else {
-        const icon = document.createElement('img');
-        icon.src = '/icons/marker.svg';
-        icon.alt = '';
-        face.append(icon);
+        const dot = document.createElement('span');
+        dot.className = 'bp-map-marker-dot';
+        dot.setAttribute('aria-hidden', 'true');
+        face.append(dot);
       }
-      const longitude = pin.longitude + 360 * Math.round((map.getCenter().lng - pin.longitude) / 360);
-      const label = availability ? pin.name + ', ' + availability.label : pin.name;
-      const marker = L.marker([pin.latitude, longitude], {
-        icon: L.divIcon({ className: availability ? 'bp-marker bp-pill-marker' : 'bp-marker', html: face, iconSize: [44, 44], iconAnchor: [22, 22] }),
-        title: label, alt: label, interactive, keyboard: interactive, zIndexOffset: selected === pin.id ? 1000 : 0,
+      const label = availability ? pin.name + ', ' + availability.label +
+        (compact && !pin.stationId ? ', ' + chargerCountLabel(pinChargerCount(pin)) : '') : pin.name;
+      const iconSize: PointTuple = compact ? [detailPinWidth, detailPinHeight] : [44, 44];
+      const marker = L.marker(pinPosition(pin, map.getCenter().lng), {
+        icon: L.divIcon({ className: availability ? 'bp-marker bp-pill-marker' : 'bp-marker', html: face,
+          iconSize, iconAnchor: [iconSize[0] / 2, iconSize[1] / 2] }),
+        title: label, alt: label, interactive, keyboard: interactive, zIndexOffset: current ? 1000 : 0,
       }).addTo(markers);
       const element = marker.getElement();
       element?.setAttribute('aria-label', label);
+      if (element && availability && pin.nextStatusChangeAt && clock) {
+        const stopEstimate = showPinEstimate(face, element, pin.nextStatusChangeAt, clock, {
+          compact,
+          statusLabel: !compact && !pin.counts?.available ? statusLabel : undefined,
+        });
+        if (stopEstimate) stopEstimates.push(stopEstimate);
+      }
       if (interactive && element) {
         element.dataset.pin = pin.id;
-        element.setAttribute('aria-pressed', String(selected === pin.id));
+        if (pin.stationId) element.dataset.chargerPin = pin.id;
+        element.setAttribute('aria-pressed', String(current));
         element.addEventListener('keydown', event => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             event.stopPropagation();
-            select(pin.id, true);
+            select(stationId, true);
           }
         });
-        marker.on('click', () => select(pin.id, false));
-        if (focusedPin.current === pin.id && document.activeElement === document.body) element.focus({ preventScroll: true });
+        marker.on('click', () => select(stationId, false));
+        restoreFocus(element, pin.id);
       }
     }
+    if (focusedPin.current && document.activeElement === document.body) map.getContainer().focus({ preventScroll: true });
     focusedPin.current = undefined;
     return () => {
       const active = document.activeElement;
-      if (active instanceof HTMLElement && active.dataset.pin && map.getContainer().contains(active)) focusedPin.current = active.dataset.pin;
+      if (active instanceof HTMLElement && map.getContainer().contains(active)) focusedPin.current = active.dataset.cluster ?? active.dataset.pin;
+      stopEstimates.forEach(stop => stop());
       markers.remove();
     };
-  }, [loaded, pins, selected, interactive]);
+  }, [loaded, pins, selected, interactive, clock, clusterStations, zoom]);
 
-  return <section className="bp-map" aria-label="Charging map">
+  return <section className="bp-map" aria-label="Charging map" inert={inert}>
     <div ref={host} className="bp-map-surface" aria-label="Interactive charging map" />
     {error && <div className="bp-map-error" role="status">{error} <button type="button" onClick={() => { setError(''); setLoaded(undefined); setAttempt(n => n + 1); }}>Retry map</button></div>}
   </section>;

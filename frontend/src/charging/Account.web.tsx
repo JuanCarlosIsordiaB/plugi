@@ -1,6 +1,6 @@
 import { type Href, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { isReportStatus, signIn, signOut, startSession, useSignedIn, verifyCode } from './api';
+import { isReportStatus, parseReportDuration, signIn, signOut, startSession, useSignedIn, verifyCode } from './api';
 import { AppLink, Brand, Feedback, Nav, errorMessage, useResource } from './ui.web';
 
 function returnDestination(value: unknown): Href | null {
@@ -13,9 +13,14 @@ function returnDestination(value: unknown): Href | null {
 const subscribeToHydration = () => () => {};
 
 export default function Account() {
-  const { station, charger, status, returnTo } = useLocalSearchParams<{ station?: string; charger?: string; status?: string; returnTo?: string }>();
+  const { station, charger, status, durationMinutes, returnTo } = useLocalSearchParams<{
+    station?: string; charger?: string; status?: string; durationMinutes?: string; returnTo?: string;
+  }>();
+  const duration = status === 'occupied' ? parseReportDuration(durationMinutes) : undefined;
   const report = station && charger && isReportStatus(status)
-    ? { pathname: '/stations/[id]/report' as const, params: { id: station, charger, status } } : null;
+    ? { pathname: '/stations/[id]/report' as const, params: {
+      id: station, charger, status, ...(duration === undefined ? {} : { durationMinutes: String(duration) }),
+    } } : null;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [challenge, setChallenge] = useState('');
