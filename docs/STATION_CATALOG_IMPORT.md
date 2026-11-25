@@ -85,6 +85,16 @@ The verified local snapshot included 55 FullCarro-linked stations and 92 charger
 
 Plaza San Luis was classified as `public` and `free`. Solarium Energy was classified as `restricted` and `paid`. The BMW Group plant was classified as `private` with pricing set to `unknown`. Access classifications are venue-based estimates. Pricing categories reflect the listings reviewed and do not capture parking fees or exact rates. The source JSON retains published outlet counts and other listing metadata.
 
+Example station fields as stored in PostgreSQL and returned by the API after classification.
+
+```json
+[
+  { "name": "PLAZA SAN LUIS", "access_type": "public", "pricing_type": "free" },
+  { "name": "SOLARIUM ENERGY", "access_type": "restricted", "pricing_type": "paid" },
+  { "name": "BMW GROUP PLANTA SAN LUIS POTOSÍ", "access_type": "private", "pricing_type": "unknown" }
+]
+```
+
 Use the existing connector catalog to map provider labels to buscaPila codes. When identified equipment has no label, generate a label such as `Charger 1`. The current model stores connector types per charger. Connector counts and power in kW are outside this proposal.
 
 ## Import behavior
@@ -106,7 +116,7 @@ Use the existing connector catalog to map provider labels to buscaPila codes. Wh
 
 Prepare a JSON batch with `region` set to `MX-SLP` and a `stations` array. Each station uses the existing station input fields with an added `source` object containing `provider`, `externalId`, and `sourceUrl`. To link a confirmed match to a station already in buscaPila, include its UUID as `existingStationId`. Select entries actually located in San Luis Potosí before preparing the batch.
 
-This synthetic example illustrates the file format.
+This synthetic example shows the batch with station classifications and a proposed exact rate. When `pricing_type` is `paid`, include `price` if the rate is known. Omit `price` when the rate is unknown. The example means 8 MXN per kilowatt-hour. Before running the POST command, omit `access_type`, `pricing_type`, and `price` from the submitted file. Access and pricing categories can be applied in PostgreSQL after import. Exact rates would require a schema and API change.
 
 ```json
 {
@@ -117,6 +127,13 @@ This synthetic example illustrates the file format.
       "address": "Example Address",
       "latitude": 22.13,
       "longitude": -101.04,
+      "access_type": "public",
+      "pricing_type": "paid",
+      "price": {
+        "amount": 8,
+        "currency": "MXN",
+        "unit": "kWh"
+      },
       "chargers": [{ "label": "Charger 1", "connectorTypes": ["j1772"] }],
       "source": {
         "provider": "example",
