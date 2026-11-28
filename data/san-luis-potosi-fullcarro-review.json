@@ -1,0 +1,38 @@
+{
+  "region": "MX-SLP",
+  "scope": "sample",
+  "publishedStateListings": 63,
+  "sampleListings": 4,
+  "review": [
+    {
+      "name": "Plaza San Luis",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/plaza-san-luis/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "Solarium Energy",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/solarium-energy/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "Dalton BYD LLCG",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-llcg/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "Las Palmas Midway Inn",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/matehuala/las-palmas-midway-inn/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    }
+  ]
+}

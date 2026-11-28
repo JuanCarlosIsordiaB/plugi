@@ -1,7 +1,7 @@
 import { useLocalSearchParams } from 'expo-router';
 import { type FormEvent, useEffect, useState } from 'react';
 import { authenticated, jsonRequest, useSessionVersion } from '../charging/api';
-import { AppLink, Feedback } from '../charging/ui.web';
+import { Feedback } from '../charging/ui.web';
 import { ContactPage, MessageField, useAction } from './common.web';
 import { conversationsPath, PageButtons, Timestamp, useConversationPage } from './conversations.web';
 
@@ -23,7 +23,7 @@ function ReportMessage({ id }: { id: string }) {
   }
   if (reported) return <p className="bp-muted" role="status">Message reported.</p>;
   if (!open) return <button className="bp-text" onClick={() => setOpen(true)}>Report message</button>;
-  return <form className="bp-form" onSubmit={report}>
+  return <form className="bp-form bc-report" onSubmit={report}>
     <label>Reason<select required name="reason" defaultValue="" disabled={action.pending}>
       <option disabled value="">Choose a reason</option><option value="abuse">Abuse</option>
       <option value="spam">Spam</option><option value="other">Other</option>
@@ -65,11 +65,10 @@ function Conversation({ id, session }: { id: string; session: number }) {
     });
   }
   return <>
-    <div><AppLink href="/messages" className="bp-text">Back to messages</AppLink></div>
-    <section className="bc-card">
+    <section className="bp-page-surface bc-card">
       <div className="bc-heading"><h2>Messages</h2><button className="bp-secondary" disabled={!page.data && !page.error} onClick={page.refresh}>Refresh</button></div>
       {!messages ? <Feedback {...page} loading="Loading messages…" /> : messages.length === 0 ?
-        <p className="bp-muted">{page.isOlder ? 'No older messages.' : 'There are no visible messages in this conversation.'}</p> :
+        <p className="bc-state" role="status">{page.isOlder ? 'No older messages.' : 'There are no visible messages in this conversation.'}</p> :
         <ol className="bc-thread">{messages.map(message => <li className={'bc-bubble' + (message.mine ? ' mine' : '')} key={message.id}>
           <strong>{message.mine ? 'You' : 'Other driver'}</strong>
           <p>{message.body}</p><Timestamp value={message.createdAt} />
@@ -79,15 +78,15 @@ function Conversation({ id, session }: { id: string; session: number }) {
         newer={page.isOlder ? page.newer : undefined} />
     </section>
     {notice && <p className="bp-success" role="status">{notice}</p>}
-    {blocked && !notice && <p className="bp-muted">You blocked this driver.</p>}
+    {blocked && !notice && <p className="bc-state">You blocked this driver.</p>}
     {messages && !blocked && <>
-      <form className="bp-form bc-card" onSubmit={send}>
+      <form className="bp-form bp-page-surface bc-card" onSubmit={send}>
         <fieldset disabled={reply.pending || block.pending}><legend className="bp-screen-reader">Reply to this conversation</legend>
           <MessageField label="Reply" value={draft} onChange={setDraft} /></fieldset>
         {reply.error && <p className="bp-error" role="alert">{reply.error}</p>}
         <button className="bp-primary" disabled={reply.pending || block.pending}>{reply.pending ? 'Sending…' : 'Send reply'}</button>
       </form>
-      {confirmBlock ? <section className="bc-card"><h2>Block this driver?</h2><p>This stops both of you from sending each other charging messages.</p>
+      {confirmBlock ? <section className="bp-page-surface bc-card"><h2>Block this driver?</h2><p>This stops both of you from sending each other charging messages.</p>
         {block.error && <p className="bp-error" role="alert">{block.error}</p>}
         <div className="bc-actions"><button className="bp-secondary" disabled={block.pending || reply.pending} onClick={blockDriver}>{block.pending ? 'Blocking…' : 'Confirm block'}</button>
           <button className="bp-text" disabled={block.pending} onClick={() => { setConfirmBlock(false); block.clearError(); }}>Cancel</button></div>
@@ -106,7 +105,7 @@ export default function Thread() {
     }
   }, [session]);
   const valid = typeof id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
-  return <ContactPage title="Charging conversation" path={valid ? '/messages/' + id : '/messages'} introduction="Sign in to open this charging conversation.">
-    {valid ? <Conversation key={id} id={id} session={session} /> : <section className="bc-card"><p role="alert">Invalid conversation link.</p><AppLink href="/messages" className="bp-secondary">Back to messages</AppLink></section>}
+  return <ContactPage title="Charging conversation" path={valid ? '/messages/' + id : '/messages'} introduction="Sign in to open this charging conversation." backToMessages>
+    {valid ? <Conversation key={id} id={id} session={session} /> : <section className="bp-page-surface bc-card"><p className="bp-error" role="alert">Invalid conversation link.</p></section>}
   </ContactPage>;
 }

@@ -43,38 +43,45 @@ function Garage() {
   }
   return <>
     {notice && <p className="bp-success" role="status">{notice}</p>}
-    <section className="bc-card">
-      <h2>Registered vehicles</h2>
-      {!vehicles.data ? <Feedback {...vehicles} loading="Loading your vehicles…" /> :
-        vehicles.data.vehicles.length === 0 ? <p className="bp-muted">You haven’t registered a vehicle yet.</p> :
-          <ul>{vehicles.data.vehicles.map(vehicle => <li className="bc-row" key={vehicle.id}>
-            <strong>{vehicle.plate} · {vehicle.plateRegion ? vehicle.plateRegion + ', ' : ''}{vehicle.plateCountry}</strong>
-            <p className="bp-muted">VIN ending in {vehicle.vin.slice(-4)}</p>
-            {removing === vehicle.id ? <>
-              <p>Remove this vehicle from your account? Drivers will lose the option to contact you through this registration.</p>
-              {remove.error && <p className="bp-error" role="alert">{remove.error}</p>}
-              <div className="bc-actions"><button className="bp-secondary" disabled={remove.pending} onClick={() => removeVehicle(vehicle.id)}>
-                {remove.pending ? 'Removing…' : 'Confirm removal'}</button>
-                <button className="bp-text" disabled={remove.pending} onClick={() => setRemoving('')}>Cancel</button></div>
-            </> : <div><button className="bp-text" disabled={remove.pending} onClick={() => {
-              remove.clearError(); setRemoving(vehicle.id);
-            }}>Remove vehicle<span className="bp-screen-reader"> {vehicle.plate}</span></button></div>}
-          </li>)}</ul>}
-    </section>
-    <form className="bp-form bc-card" onSubmit={register}>
-      <h2>Register a vehicle</h2>
-      <p className="bp-muted">Register a vehicle you own with a Mexican-issued plate. Other drivers can look up your vehicle by VIN or by plate when there’s a unique match. Ownership is self-declared.</p>
-      <fieldset disabled={add.pending}>
-        <legend className="bp-screen-reader">Vehicle identifiers</legend>
-        {(['plate', 'vin'] as const).map(name => {
-          const field = identifierFields[name];
-          return <label key={name}>{field.label}<input name={name} required autoCapitalize="characters" autoComplete="off"
-            spellCheck={false} maxLength={48} pattern={field.pattern} title={field.title} /></label>;
-        })}
-      </fieldset>
-      {add.error && <p className="bp-error" role="alert">{add.error}</p>}
-      <button className="bp-primary" disabled={add.pending}>{add.pending ? 'Adding…' : 'Add vehicle'}</button>
-    </form>
+    <div className="bc-garage">
+      <section className="bp-page-surface bc-card">
+        <h2>Registered vehicles</h2>
+        {!vehicles.data ? <Feedback {...vehicles} loading="Loading your vehicles…" /> :
+          vehicles.data.vehicles.length === 0 ? <p className="bc-state" role="status">You haven’t registered a vehicle yet.</p> :
+            <ul className="bc-vehicle-list">{vehicles.data.vehicles.map(vehicle => <li className="bc-row" key={vehicle.id}>
+              <div className="bc-vehicle-title">
+                <strong>{vehicle.plate}</strong>
+                <p className="bp-muted">{vehicle.plateRegion ? vehicle.plateRegion + ', ' : ''}{vehicle.plateCountry}</p>
+              </div>
+              <p className="bp-muted">VIN ending in {vehicle.vin.slice(-4)}</p>
+              {removing === vehicle.id ? <>
+                <p>Remove this vehicle from your account? Drivers will lose the option to contact you through this registration.</p>
+                {remove.error && <p className="bp-error" role="alert">{remove.error}</p>}
+                <div className="bc-actions"><button className="bp-secondary" disabled={remove.pending} onClick={() => removeVehicle(vehicle.id)}>
+                  {remove.pending ? 'Removing…' : 'Confirm removal'}</button>
+                  <button className="bp-text" disabled={remove.pending} onClick={() => setRemoving('')}>Cancel</button></div>
+              </> : <div><button className="bp-text" disabled={remove.pending} onClick={() => {
+                remove.clearError(); setRemoving(vehicle.id);
+              }}>Remove vehicle<span className="bp-screen-reader"> {vehicle.plate}</span></button></div>}
+            </li>)}</ul>}
+      </section>
+      <form className="bp-form bp-page-surface bc-card" onSubmit={register}>
+        <div className="bc-card-title">
+          <h2>Register a vehicle</h2>
+          <p className="bp-muted">Register a vehicle you own with a Mexican-issued plate. Other drivers can look up your vehicle by VIN or by plate when there’s a unique match. Ownership is self-declared.</p>
+        </div>
+        <fieldset disabled={add.pending}>
+          <legend className="bp-screen-reader">Vehicle identifiers</legend>
+          {(['plate', 'vin'] as const).map(name => {
+            const field = identifierFields[name];
+            return <label key={name}>{field.label}<input name={name} required autoCapitalize="characters" autoComplete="off"
+              spellCheck={false} maxLength={48} pattern={field.pattern} title={field.title} /></label>;
+          })}
+        </fieldset>
+        {add.error && <p className="bp-error" role="alert">{add.error}</p>}
+        <button className="bp-primary" disabled={add.pending}>{add.pending ? 'Adding…' : 'Add vehicle'}</button>
+      </form>
+    </div>
   </>;
 }
 

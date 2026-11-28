@@ -1,0 +1,70 @@
+[
+  {
+    "name": "Plaza San Luis",
+    "address": "Blvd. Antonio Rocha Cordero 7000, Centro, 78215 San Luis, S.L.P., Mexico",
+    "latitude": 22.128349,
+    "longitude": -101.031804,
+    "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/plaza-san-luis/",
+    "publishedOutletCount": 6,
+    "publishedConnectorTypes": [
+      "J-1772",
+      "NACS (Tesla)"
+    ],
+    "access_type": "public",
+    "access_note": "Inferred from the shopping center setting. The listing does not confirm charging access rules.",
+    "pricing_type": "free",
+    "network": "Tesla Destination",
+    "hours": null
+  },
+  {
+    "name": "Solarium Energy",
+    "address": "Malaquita 540, San Luis Potosí, San Luis Potosí, Mexico",
+    "latitude": 22.1414981,
+    "longitude": -100.9504581,
+    "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/solarium-energy/",
+    "publishedOutletCount": 3,
+    "publishedConnectorTypes": [
+      "J-1772",
+      "Toma doméstica",
+      "Type 2"
+    ],
+    "network": null,
+    "hours": "24/7",
+    "access_type": "restricted",
+    "access_note": "Tentative. The listing mentions appointments without saying whether they are required.",
+    "pricing_type": "paid"
+  },
+  {
+    "name": "Dalton BYD LLCG",
+    "address": "Cto. La Loma 301, Lomas del Tecnológico, 78216 San Luis Potosí, S.L.P., Mexico",
+    "latitude": 22.1203745,
+    "longitude": -101.0318419,
+    "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-llcg/",
+    "publishedOutletCount": 1,
+    "publishedConnectorTypes": [
+      "GB/T AC"
+    ],
+    "access_type": "unknown",
+    "access_note": "The dealership listing does not specify who can use the charger.",
+    "pricing_type": "free",
+    "network": null,
+    "hours": null
+  },
+  {
+    "name": "Las Palmas Midway Inn",
+    "address": "Zona de Hoteles, 78745 Matehuala, S.L.P., Mexico",
+    "latitude": 23.660595,
+    "longitude": -100.634944,
+    "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/matehuala/las-palmas-midway-inn/",
+    "publishedOutletCount": 2,
+    "publishedConnectorTypes": [
+      "NEMA 14-50",
+      "Toma doméstica"
+    ],
+    "access_type": "unknown",
+    "access_note": "The hotel listing does not specify whether charging is limited to guests.",
+    "pricing_type": "free",
+    "network": null,
+    "hours": null
+  }
+]

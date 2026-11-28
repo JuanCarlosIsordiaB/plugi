@@ -85,31 +85,37 @@ function RequestForm() {
     });
   }
 
-  if (accepted) return <section className="bc-card">
+  if (accepted) return <section className="bp-page-surface bc-card">
     <h2 ref={resultHeading} tabIndex={-1}>Request accepted</h2>
     <p role="status">If the driver replies, the conversation will appear in Messages.</p>
-    <AppLink className="bp-primary" href="/messages">View messages</AppLink>
-    <button className="bp-text" onClick={() => {
-      focusLookup.current = true;
-      setAccepted(false);
-    }}>Look up another vehicle</button>
+    <div className="bc-actions">
+      <AppLink className="bp-primary" href="/messages">View messages</AppLink>
+      <button className="bp-text" onClick={() => {
+        focusLookup.current = true;
+        setAccepted(false);
+      }}>Look up another vehicle</button>
+    </div>
   </section>;
-  if (target) return <form className="bp-form bc-card" onSubmit={initiate}>
-    <h2 ref={resultHeading} tabIndex={-1}>Write a charging message</h2>
-    <p className="bp-muted">{'vin' in target ? 'VIN ending in ' + target.vin.slice(-4) : 'Plate ' + target.plate}</p>
+  if (target) return <form className="bp-form bp-page-surface bc-card" onSubmit={initiate}>
+    <div className="bc-card-title">
+      <h2 ref={resultHeading} tabIndex={-1}>Write a charging message</h2>
+      <p className="bp-muted">{'vin' in target ? 'VIN ending in ' + target.vin.slice(-4) : 'Plate ' + target.plate}</p>
+    </div>
     <fieldset disabled={send.pending}><legend className="bp-screen-reader">Charging message</legend><MessageField label="Message" value={message} onChange={setMessage} /></fieldset>
     {send.error && <p className="bp-error" role="alert">{send.error}</p>}
-    <button className="bp-primary" disabled={send.pending}>{send.pending ? 'Submitting…' : 'Send request'}</button>
-    <button className="bp-text" type="button" disabled={send.pending} onClick={() => {
-      focusLookup.current = true;
-      setTarget(undefined);
-      setIdentifier('');
-      setMessage(suggestedMessage);
-      send.clearError();
-    }}>Choose another vehicle</button>
+    <div className="bc-actions">
+      <button className="bp-primary" disabled={send.pending}>{send.pending ? 'Submitting…' : 'Send request'}</button>
+      <button className="bp-text" type="button" disabled={send.pending} onClick={() => {
+        focusLookup.current = true;
+        setTarget(undefined);
+        setIdentifier('');
+        setMessage(suggestedMessage);
+        send.clearError();
+      }}>Choose another vehicle</button>
+    </div>
   </form>;
   const field = identifierFields[method];
-  return <form className="bp-form bc-card" onSubmit={lookUp}>
+  return <form className="bp-form bp-page-surface bc-card" onSubmit={lookUp}>
     <fieldset disabled={lookup.pending}>
       <legend>Look up by</legend>
       <div className="bc-methods">
@@ -118,7 +124,7 @@ function RequestForm() {
         <label className="bp-option"><input type="radio" name="method" value="vin" checked={method === 'vin'}
           onChange={() => chooseMethod('vin')} />VIN</label>
       </div>
-      <div className="bc-identifier">
+      <div className="bc-field">
         <label htmlFor="bc-lookup-identifier">{field.label}</label>
         <input id="bc-lookup-identifier" ref={identifierInput} name={method} required autoCapitalize="characters" autoComplete="off"
           spellCheck={false} maxLength={48} pattern={field.pattern} title={field.title} value={identifier}
@@ -131,9 +137,9 @@ function RequestForm() {
           : 'Enter the 17-character VIN.'}</p>
       </div>
     </fieldset>
-    {lookupExpired && <p className="bp-feedback" role="status">This plate lookup expired. Look up the plate again to continue with your saved message.</p>}
+    {lookupExpired && <p className="bc-state" role="status">This plate lookup expired. Look up the plate again to continue with your saved message.</p>}
     {unavailable && <div>
-      <p className="bp-feedback" role="status">{method === 'plate'
+      <p className="bc-state" role="status">{method === 'plate'
         ? 'No vehicle is available for contact with that plate. Check the plate or try the VIN.'
         : 'No vehicle is available for contact with that VIN. Check the VIN and try again.'}</p>
       {method === 'plate' && <button className="bp-text" type="button" onClick={() => {

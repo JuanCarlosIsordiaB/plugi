@@ -1,7 +1,7 @@
 import { type Href, router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { isReportStatus, parseReportDuration, signIn, signOut, startSession, useSignedIn, verifyCode } from './api';
-import { AppLink, Brand, Feedback, Nav, errorMessage, useResource } from './ui.web';
+import { AppLink, Brand, Feedback, Icon, Nav, errorMessage, useResource } from './ui.web';
 
 function returnDestination(value: unknown): Href | null {
   if (typeof value !== 'string') return null;
@@ -66,30 +66,37 @@ export default function Account() {
     catch (cause) { setError(errorMessage(cause)); }
     finally { setPending(false); }
   }
-  return <main className="bp-shell bp-account">
+  return <main className="bp-shell bp-page-shell bp-account">
     <header className="bp-header"><Brand /><Nav account /></header>
-    <section className="bp-account-card">
-      <h1>{signedIn ? 'Account' : challenge ? 'Verify your sign-in' : 'Sign in'}</h1>
-      {signedIn ? <div className="bp-form">
-        {profile.data ? <div><strong>{profile.data.name}</strong><p className="bp-muted">{profile.data.email}</p></div> :
-          <Feedback error={profile.error} retry={profile.retry} loading="Loading profile…" />}
-        {destination && <AppLink href={destination} className="bp-primary">{report ? 'Continue report' : 'Continue'}</AppLink>}
-        <AppLink href={'/vehicles' as Href} className="bp-secondary">My vehicles</AppLink>
-        <AppLink href={'/proposals' as Href} className="bp-secondary">My proposals</AppLink>
-        <button className="bp-secondary" disabled={pending} onClick={logout}>Sign out</button>
-        {error && <p className="bp-error" role="alert">{error}</p>}
-      </div> : <form className="bp-form" onSubmit={submit}>
-        {report && <p className="bp-muted">Sign in to submit your charger report.</p>}
-        {challenge ? <label>Authenticator code<input ref={codeInput} required type="text" inputMode="numeric" autoComplete="one-time-code"
-          pattern="[0-9]{6}" maxLength={6} value={code} onChange={event => setCode(event.target.value)} /></label> : <>
-          <label>Email<input required type="email" autoComplete="username" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} /></label>
-          <label>Password<input required type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} /></label>
-        </>}
-        {error && <p className="bp-error" role="alert">{error}</p>}
-        <button className="bp-primary" disabled={!ready || pending} type="submit">{!ready || pending ? 'Please wait…' : challenge ? 'Verify code' : 'Sign in'}</button>
-        {challenge && <button disabled={pending} className="bp-text" type="button" onClick={() => { setChallenge(''); setCode(''); setError(''); }}>Use email and password</button>}
-      </form>}
-      <AppLink href={report ?? '/'} className="bp-text bp-return">{report ? 'Back to report' : 'Back to map'}</AppLink>
-    </section>
+    <div className="bp-page-content bp-page-narrow">
+      <AppLink href={report ?? '/'} className="bp-text bp-page-back"><Icon name="back" />{report ? 'Back to report' : 'Back to map'}</AppLink>
+      <h1 className="bp-page-title" id="bp-account-title">{signedIn ? 'Account' : challenge ? 'Verify your sign-in' : 'Sign in'}</h1>
+      <section className="bp-page-surface" aria-labelledby="bp-account-title">
+        {signedIn ? <div className="bp-form">
+          {profile.data ? <div className="bp-account-profile">
+            <span className="bp-account-avatar"><Icon name="user" /></span>
+            <div><strong>{profile.data.name}</strong><p className="bp-muted">{profile.data.email}</p></div>
+          </div> :
+            <Feedback error={profile.error} retry={profile.retry} loading="Loading profile…" />}
+          {destination && <AppLink href={destination} className="bp-primary">{report ? 'Continue report' : 'Continue'}</AppLink>}
+          <div className="bp-account-links">
+            <AppLink href={'/vehicles' as Href} className="bp-secondary">My vehicles</AppLink>
+            <AppLink href={'/proposals' as Href} className="bp-secondary">My proposals</AppLink>
+          </div>
+          <button className="bp-text bp-account-signout" disabled={pending} onClick={logout}>Sign out</button>
+          {error && <p className="bp-error" role="alert">{error}</p>}
+        </div> : <form className="bp-form" onSubmit={submit}>
+          {report && <p className="bp-muted">Sign in to submit your charger report.</p>}
+          {challenge ? <label>Authenticator code<input ref={codeInput} required type="text" inputMode="numeric" autoComplete="one-time-code"
+            pattern="[0-9]{6}" maxLength={6} value={code} onChange={event => setCode(event.target.value)} /></label> : <>
+            <label>Email<input required type="email" autoComplete="username" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} /></label>
+            <label>Password<input required type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} /></label>
+          </>}
+          {error && <p className="bp-error" role="alert">{error}</p>}
+          <button className="bp-primary" disabled={!ready || pending} type="submit">{!ready || pending ? 'Please wait…' : challenge ? 'Verify code' : 'Sign in'}</button>
+          {challenge && <button disabled={pending} className="bp-text" type="button" onClick={() => { setChallenge(''); setCode(''); setError(''); }}>Use email and password</button>}
+        </form>}
+      </section>
+    </div>
   </main>;
 }

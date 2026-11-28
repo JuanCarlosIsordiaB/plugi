@@ -1,17 +1,20 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { useSessionVersion } from '../charging/api';
-import { AppLink, Brand, Nav, errorMessage } from '../charging/ui.web';
-import './styles.css';
+import { AppLink, Brand, Icon, Nav, errorMessage } from '../charging/ui.web';
 
-export function ContactPage({ title, path, children, introduction }: {
-  title: string; path: string; children: ReactNode; introduction: string;
+export function ContactPage({ title, path, children, introduction, backToMessages }: {
+  title: string; path: string; children: ReactNode; introduction: string; backToMessages?: boolean;
 }) {
   const session = useSessionVersion();
-  return <main className="bp-shell bp-account">
-    <header className="bp-header"><Brand /><Nav account={path === '/vehicles'} messages={path !== '/vehicles'} /></header>
-    <div className="bc-page">
-      <h1>{title}</h1>
-      {session ? <div key={session} className="bc-content">{children}</div> : <section className="bc-card">
+  const vehicles = path === '/vehicles';
+  return <main className="bp-shell bp-page-shell">
+    <header className="bp-header"><Brand /><Nav account={vehicles} messages={!vehicles} /></header>
+    <div className={'bp-page-content bc-page' + (vehicles ? ' bc-page-garage' : path === '/contact' ? ' bc-page-lookup' : '')}>
+      <div className="bc-page-heading">
+        {session && backToMessages && <AppLink href="/messages" className="bp-text bp-page-back"><Icon name="back" />Back to messages</AppLink>}
+        <h1 className="bp-page-title">{title}</h1>
+      </div>
+      {session ? <div key={session} className="bc-content">{children}</div> : <section className="bp-page-surface bc-card bc-sign-in">
         <p>{introduction}</p>
         <AppLink className="bp-primary" href={{ pathname: '/login', params: { returnTo: path } }}>Sign in</AppLink>
       </section>}
@@ -61,8 +64,12 @@ export const identifierFields = {
 };
 
 export function MessageField({ label, value, onChange }: { label: string; value: string; onChange: (next: string) => void }) {
-  return <label>{label}<input required name="message" value={value} maxLength={500} onChange={event => onChange(event.target.value)}
-    pattern={String.raw`.*\S.*`} title="Enter a plain-text charging message." />
-    <span className="bp-muted bc-hint">Plain text, up to 500 characters. Leave out links.</span>
-  </label>;
+  const id = useId();
+  const hint = id + '-hint';
+  return <div className="bc-field">
+    <label htmlFor={id}>{label}</label>
+    <input id={id} required name="message" value={value} maxLength={500} onChange={event => onChange(event.target.value)}
+      pattern={String.raw`.*\S.*`} title="Enter a plain-text charging message." aria-describedby={hint} />
+    <span id={hint} className="bp-muted bc-hint">Plain text, up to 500 characters. Leave out links.</span>
+  </div>;
 }

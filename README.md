@@ -11,7 +11,8 @@ buscaPila/
 |-- backend/            # API, independent npm project
 |-- docs/
 |   |-- TIMELINE.md      # Dated milestones tagged by application
-|   `-- ARCHITECTURE.md  # System and agent workflow diagrams
+|   |-- ARCHITECTURE.md  # Repository, runtime, and agent workflow
+|   `-- PRODUCT.md       # Product goals and driver experience
 |-- AGENTS.md           # Shared working agreements
 `-- package.json        # Forwarding scripts
 ```
@@ -23,7 +24,9 @@ All project code, identifiers, comments, documentation, and new UI text use Engl
 ## Project progress and architecture
 
 - [Timeline](docs/TIMELINE.md): completed milestones and planned work tagged BACKEND, FRONTEND, or SHARED.
-- [Architecture](docs/ARCHITECTURE.md): Mermaid diagrams of the system and agent workflow.
+- [Architecture](docs/ARCHITECTURE.md): repository structure, runtime modules, and agent workflow.
+- [Product overview](docs/PRODUCT.md): the idea behind buscaPila, driver flows, and planned features.
+- [Database design](docs/DATABASE.md): PostgreSQL entity-relationship diagrams.
 
 View these documents using a Mermaid-capable Markdown preview, such as GitHub's rendered file view.
 Solid system arrows represent implemented relationships; dashed arrows are planned.

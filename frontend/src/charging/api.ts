@@ -27,6 +27,8 @@ export interface Station {
   address: string;
   latitude: number;
   longitude: number;
+  access_type?: 'public' | 'private' | 'restricted' | 'unknown';
+  pricing_type?: 'free' | 'paid' | 'mixed' | 'unknown';
   latestReportAt: string | null;
   statusAsOf: string;
   nextStatusChangeAt: string | null;

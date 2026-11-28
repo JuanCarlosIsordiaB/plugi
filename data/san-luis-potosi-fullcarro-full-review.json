@@ -1,0 +1,476 @@
+{
+  "region": "MX-SLP",
+  "scope": "full",
+  "publishedStateListings": 63,
+  "datasetListings": 60,
+  "excludedListings": 3,
+  "review": [
+    {
+      "name": "NISSAN CIUDAD VALLES",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cd-valles/nissan-ciudad-valles/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "EVERGO MEDIA LUNA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-fernandez/evergo-media-luna/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "ELECTRONITY - PUNTO NOVEL",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-valles/electronity-punto-novel/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "NADA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-valles/nada/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "PLAZA ELITE",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-valles/plaza-elite/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "EL TALLER MEZQUITAL",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/el-mezquital/el-taller-mezquital/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "GASOMAX LAS MARIPOSAS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/la-pila/gasomax-las-mariposas/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "GASPEED BARRA 17 ANDARES",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/la-pila/gaspeed-barra-17-andares/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "LAS PALMAS MIDWAY INN",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/matehuala/las-palmas-midway-inn/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "NISSAN TORRES CORZO MATEHUALA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/matehuala/nissan-torres-corzo-matehuala/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "LAS SEVILLANAS (1)",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/rancho-nuevo/las-sevillanas-1/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "LAS SEVILLANAS (2)",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/rancho-nuevo/las-sevillanas-2/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "BMW CALETTO MOTORS SENDERO",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/bmw-caletto-motors-sendero/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "CENTRO DE CONVENCIONES CARGADOR BMW",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/centro-de-convenciones-cargador-bmw/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "CITY EXPRESS SAN LUIS POTOSI ZONA INDUSTRIAL",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/city-express-san-luis-potosi-zona-industrial/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "CLUB DE GOLF LA LOMA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/club-de-golf-la-loma/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "DEPORTIVO LA LOMA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/deportivo-la-loma/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "FIESTA INN SAN LUIS POTOSÍ GLORIETA JUAREZ",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/fiesta-inn-san-luis-potosi-glorieta-juarez/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "FIESTA INN SAN LUIS POTOSI­ ORIENTE",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/fiesta-inn-san-luis-potosi-oriente/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "HOSPITAL LOMAS DE SAN LUIS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/hospital-lomas-de-san-luis/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "HOTEL HYATT REGENCY",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/hotel-hyatt-regency/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "NISSAN SLP SENDERO",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/nissan-slp-sendero/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "NISSAN SLP TORRE CORZO",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/nissan-slp-torre-corzo/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "NISSAN TORRES CORZO CARRANZA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/nissan-torres-corzo-carranza/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "PARQUE INDUSTRIAL WTC",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/parque-industrial-wtc/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "PLAZA CHAPULTEPEC 1200",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/plaza-chapultepec-1200/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "PLAZA SAN LUIS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/plaza-san-luis/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "SMART SUITES EBH",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/smart-suites-ebh/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "AEROPUERTO SAN LUIS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/aeropuerto-san-luis/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "BALCONES DEL VALLE",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/balcones-del-valle/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "BMW CALETTO MOTORS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/bmw-caletto-motors/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "BMW GROUP PLANTA SAN LUIS POTOSÍ",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/bmw-group-planta-san-luis-potosi/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "BYD CARRETERA 57",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/byd-carretera-57/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "CADILLAC SAN LUIS EVERGO",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/cadillac-san-luis-evergo/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "CITY EXPRESS PLUS BY MARRIOTT SAN LUIS POTOSÍ",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/city-express-plus-by-marriott-san-luis-potosi/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "CLUB DEPORTIVO LA LOMA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/club-deportivo-la-loma/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "COURTYARD LOS LAGOS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/courtyard-los-lagos/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "DALTON BYD",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "DALTON BYD CAMPESTRE",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-campestre/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "DALTON BYD LA LOMA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-la-loma/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "DALTON BYD LLCG",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-llcg/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "DALTON BYD LOMAS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-lomas/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "GB/T is listed without AC or DC. Confirm the connector before mapping it."
+      ]
+    },
+    {
+      "name": "GASOLINERA LA POSTA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/gasolinera-la-posta/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "GASOMAX CAPULINES",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/gasomax-capulines/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "GWM HERRERA SAN LUIS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/gwm-herrera-san-luis/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "HOLIDAY IN",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/holiday-in/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "HOLIDAY INN EXPRESS SAN LUIS POTOSÍ",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/holiday-inn-express-san-luis-potosi/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "HOTEL NH SAN LUIS POTOSÍ",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/hotel-nh-san-luis-potosi/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "MERCEDES BENZ CARGADOR J1772",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/mercedes-benz-cargador-j1772/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "HILTON SAN LUIS POTOSI",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/hilton-san-luis-potosi/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "MOBIL LA POSADA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/mobil-la-posada/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "MOBIL LOMAS",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/mobil-lomas/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The current connector catalog has no code for every listed outlet type."
+      ]
+    },
+    {
+      "name": "Punto de carga en San Luis Potosí",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/punto-de-carga-en-san-luis-potosi/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "SOLARIUM ENERGY",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/solarium-energy/",
+      "issues": [
+        "The listing does not map outlets to physical chargers.",
+        "The current connector catalog has no code for every listed outlet type.",
+        "The address has no postal code. Confirm the location."
+      ]
+    },
+    {
+      "name": "VOLVO SUECIA CAR SAN LUIS POTOSÍ",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/volvo-suecia-car-san-luis-potosi/",
+      "issues": [
+        "Single outlet is listed. Confirm the physical equipment before importing."
+      ]
+    },
+    {
+      "name": "WATTS BY VEMO - THE PARK",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/watts-by-vemo-the-park/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "CASA (COMING SOON)",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-marcos/casa-coming-soon/",
+      "excluded": true,
+      "issues": [
+        "The listing appears to be a private residence. It is excluded from the dataset."
+      ]
+    },
+    {
+      "name": "Punto de carga en San Marcos",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-marcos/punto-de-carga-en-san-marcos/",
+      "excluded": true,
+      "issues": [
+        "The listing appears to be a private residence. It is excluded from the dataset."
+      ]
+    },
+    {
+      "name": "GASOMAX EVERGO",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/santa-cruz/gasomax-evergo/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "GASOMAX LA ESTANCIA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/santa-cruz/gasomax-la-estancia/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "ESTACIÓN DE SERVICIO GASOMAX LA HACIENDA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/santa-maria-del-rio/estacion-de-servicio-gasomax-la-hacienda/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    },
+    {
+      "name": "CARGADOR BYD EN CASA PARTICULAR",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/tamasopo/cargador-byd-en-casa-particular/",
+      "excluded": true,
+      "issues": [
+        "The listing appears to be a private residence. It is excluded from the dataset."
+      ]
+    },
+    {
+      "name": "LA MÁQUINITA",
+      "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/villa-hidalgo/la-maquinita/",
+      "issues": [
+        "The listing does not map outlets to physical chargers."
+      ]
+    }
+  ]
+}

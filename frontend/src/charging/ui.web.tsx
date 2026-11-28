@@ -67,8 +67,10 @@ export function Age({ at }: { at: string | null }) {
 export function Icon({ name }: { name: 'back' | 'brand' | 'map' | 'search' | 'user' | 'close' }) {
   return <img className="bp-icon" src={'/icons/' + name + '.svg'} alt="" />;
 }
-export function Brand() {
-  return <AppLink href="/" className="bp-brand"><Icon name="brand" />buscaPila</AppLink>;
+export function Brand({ markOnly = false }: { markOnly?: boolean }) {
+  return <AppLink href="/" className="bp-brand" aria-label={markOnly ? 'buscaPila' : undefined}>
+    <Icon name="brand" />{!markOnly && 'buscaPila'}
+  </AppLink>;
 }
 export function Nav({ account = false, messages = false, showAccountSettings = true }: {
   account?: boolean;
@@ -77,31 +79,24 @@ export function Nav({ account = false, messages = false, showAccountSettings = t
 }) {
   const signedIn = useSignedIn();
   const hasSettingsLink = signedIn && showAccountSettings;
-  return <>
-    <nav className="bp-nav" aria-label="Main navigation">
-      <AppLink href="/" aria-current={!account && !messages ? 'page' : undefined}><Icon name="map" />Map</AppLink>
-      <AppLink href={signedIn ? '/messages' as Href : { pathname: '/login', params: { returnTo: '/messages' } }} aria-current={messages ? 'page' : undefined}>
-        <svg className="bp-icon" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#0a604d" strokeWidth="1.7" strokeLinejoin="round" aria-hidden="true">
-          <path d="M5 4.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-6.5 4v-4A2 2 0 0 1 3 15.5v-9a2 2 0 0 1 2-2Z" />
-        </svg>Messages</AppLink>
-      {!hasSettingsLink && <AppLink href="/login" aria-current={account ? 'page' : undefined}>
-        <Icon name="user" />{signedIn ? 'Account' : 'Sign in'}
-      </AppLink>}
-    </nav>
-    {hasSettingsLink && <AppLink href="/login" className="bp-square bp-account-settings" aria-label="Account settings"
-      aria-current={account ? 'page' : undefined}>
-      <svg className="bp-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+  return <nav className="bp-nav" aria-label="Main navigation">
+    <AppLink href="/" aria-current={!account && !messages ? 'page' : undefined}><Icon name="map" />Map</AppLink>
+    <AppLink href={signedIn ? '/messages' as Href : { pathname: '/login', params: { returnTo: '/messages' } }} aria-current={messages ? 'page' : undefined}>
+      <svg className="bp-icon" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" aria-hidden="true">
+        <path d="M5 4.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-6.5 4v-4A2 2 0 0 1 3 15.5v-9a2 2 0 0 1 2-2Z" />
+      </svg>Messages
+    </AppLink>
+    <AppLink href="/login" aria-label={hasSettingsLink ? 'Account settings' : undefined} aria-current={account ? 'page' : undefined}>
+      {hasSettingsLink ? <svg className="bp-icon" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
         strokeLinejoin="round" aria-hidden="true">
         <path d="M10 3h4l.4 2.2 1.9 1.1 2.1-.8 2 3.5-1.7 1.4v2.2l1.7 1.4-2 3.5-2.1-.8-1.9 1.1L14 20h-4l-.4-2.2-1.9-1.1-2.1.8-2-3.5 1.7-1.4v-2.2L3.6 9l2-3.5 2.1.8 1.9-1.1L10 3Z" />
         <circle cx="12" cy="11.5" r="3" />
-      </svg>
-    </AppLink>}
-  </>;
+      </svg> : <Icon name="user" />}
+      {signedIn ? 'Account' : 'Sign in'}
+    </AppLink>
+  </nav>;
 }
 export function Feedback({ error, retry, loading }: { error?: string; retry: () => void; loading: string }) {
   return error ? <div className="bp-feedback" role="alert"><p>{error}</p><button className="bp-text" onClick={retry}>Try again</button></div>
     : <p className="bp-muted" role="status">{loading}</p>;
-}
-export function AvailableCount({ count }: { count: number }) {
-  return <span className={'bp-badge ' + (count ? 'available' : 'unreported')}>{count} available</span>;
 }

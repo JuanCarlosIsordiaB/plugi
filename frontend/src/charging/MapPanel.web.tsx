@@ -40,11 +40,24 @@ function pinChargerCount(pin: Pin) {
   return pin.stationId ? 1 : Object.values(pin.counts ?? {}).reduce((sum, value) => sum + value, 0);
 }
 
-function chargerCountLabel(count: number) {
-  return count + (count === 1 ? ' charger' : ' chargers');
+function chargerUnit(count: number) {
+  return count === 1 ? 'charger' : 'chargers';
 }
 
-function groupStatus(pins: Pin[]) {
+function chargerCountLabel(count: number) {
+  return count + ' ' + chargerUnit(count);
+}
+
+function chargerCountHeading(count: number) {
+  const heading = document.createElement('span');
+  heading.className = 'bp-map-pin-count';
+  const number = document.createElement('strong');
+  number.textContent = String(count);
+  heading.append(number, ' ' + chargerUnit(count));
+  return heading;
+}
+
+function groupAvailability(pins: Pin[]) {
   const counts: Station['counts'] = { available: 0, occupied: 0, out_of_service: 0, unreported: 0 };
   for (const pin of pins) {
     if (pin.counts) {
@@ -54,18 +67,26 @@ function groupStatus(pins: Pin[]) {
       counts.unreported += pin.counts.unreported;
     } else if (pin.status) counts[pin.status]++;
   }
-  return stationAvailability(counts).label;
+  return stationAvailability(counts);
 }
 
-function appendPinLabels(face: HTMLElement, title: string, status: string) {
+function appendPinLabels(face: HTMLElement, title: string | HTMLElement, status: string) {
   const heading = document.createElement('span');
   heading.className = 'bp-map-pin-heading';
-  heading.textContent = title;
+  heading.append(title);
   const subtitle = document.createElement('span');
   subtitle.className = 'bp-map-pin-status';
   subtitle.textContent = status;
   face.append(heading, subtitle);
-  return subtitle;
+}
+
+function pinIcon(L: typeof import('leaflet'), face: HTMLElement, iconSize: PointTuple, pointed: boolean) {
+  return L.divIcon({
+    className: 'bp-marker' + (pointed ? ' bp-point-marker' : ''),
+    html: face,
+    iconSize,
+    iconAnchor: [iconSize[0] / 2, pointed ? iconSize[1] - 3 : iconSize[1] / 2],
+  });
 }
 
 interface PinGroup {
@@ -139,20 +160,30 @@ function overlappingPinGroups(map: LeafletMap, pins: Pin[]) {
 
 function addCluster(
   L: typeof import('leaflet'), map: LeafletMap, markers: import('leaflet').LayerGroup,
-  group: Pin[], center: LatLng | LatLngTuple, openResults?: (keyboard: boolean) => void, clock?: StationStatusClock,
+  group: Pin[], center: LatLng | LatLngTuple,
+  results?: {
+    open: (keyboard: boolean, source?: HTMLElement) => void;
+    stationSelected: boolean;
+    selectedGroup?: string;
+    clock?: StationStatusClock;
+  },
 ) {
+  const key = (results ? 'charger:' : 'station:') + group.map(pin => pin.id).sort().join(',');
+  const current = results?.stationSelected || results?.selectedGroup === key;
   const count = group.reduce((total, pin) => total + pinChargerCount(pin), 0);
   const chargers = chargerCountLabel(count);
-  const label = (openResults ? 'Show station results for ' : 'Zoom in on ') + chargers;
+  const label = (results ? 'Show station results for ' : 'Zoom in on ') + chargers;
   const face = document.createElement('span');
-  face.className = 'bp-pin-cluster' + (openResults ? ' bp-pin-overlap' : '');
-  const availability = openResults ? groupStatus(group) : undefined;
-  if (availability) appendPinLabels(face, chargers, availability);
-  else face.textContent = chargers;
-  const iconSize: PointTuple = openResults ? [detailPinWidth, detailPinHeight] : [44, 44];
+  const availability = results ? groupAvailability(group) : undefined;
+  const heading = chargerCountHeading(count);
+  face.className = 'bp-pin-cluster' + (availability ? ' bp-pin-overlap ' + availability.status : '') +
+    (current ? ' selected' : '');
+  if (availability) appendPinLabels(face, heading, availability.label);
+  else face.append(heading);
+  const iconSize: PointTuple = results ? [detailPinWidth, detailPinHeight] : [44, 44];
   const marker = L.marker(center, {
-    icon: L.divIcon({ className: 'bp-marker bp-pill-marker', html: face, iconSize, iconAnchor: [iconSize[0] / 2, iconSize[1] / 2] }),
-    title: label, alt: label, autoPanOnFocus: false,
+    icon: pinIcon(L, face, iconSize, !!results),
+    title: label, alt: label, autoPanOnFocus: false, zIndexOffset: current ? 1000 : 0,
   }).addTo(markers);
   const zoomIn = () => {
     const bounds = L.latLngBounds(group.map(pin => pinPosition(pin, L.latLng(center).lng)));
@@ -160,18 +191,21 @@ function addCluster(
     const zoom = Math.min(chargerPinZoom, Math.max(map.getZoom() + 2, fit));
     map.setView(center, zoom, { animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches });
   };
-  marker.on('click', () => openResults ? openResults(false) : zoomIn());
   const element = marker.getElement();
+  marker.on('click', () => results ? results.open(false, element) : zoomIn());
   if (element) {
-    element.dataset.cluster = (openResults ? 'charger:' : 'station:') + group.map(pin => pin.id).sort().join(',');
-    if (openResults) element.dataset.chargerGroup = 'true';
+    element.dataset.cluster = key;
+    if (results) {
+      element.dataset.chargerGroup = 'true';
+      element.setAttribute('aria-pressed', String(current));
+    }
     element.setAttribute('aria-label', label);
-    if (availability) element.setAttribute('aria-description', availability + '.');
+    if (availability) element.setAttribute('aria-description', availability.label + '.');
     element.addEventListener('keydown', event => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       event.preventDefault();
       event.stopPropagation();
-      if (openResults) openResults(true);
+      if (results) results.open(true, element);
       else {
         map.getContainer().focus({ preventScroll: true });
         zoomIn();
@@ -179,21 +213,20 @@ function addCluster(
     });
   }
   let nextEstimate: string | undefined;
-  if (openResults && clock) {
+  const clock = results?.clock;
+  if (clock) {
     for (const { nextStatusChangeAt } of group) {
       if (nextStatusChangeAt && (!nextEstimate || nextStatusChangeAt < nextEstimate)) nextEstimate = nextStatusChangeAt;
     }
   }
   const stopEstimate = element && clock && nextEstimate ?
-    showPinEstimate(face, element, nextEstimate, clock, { compact: true }) : undefined;
+    showPinEstimate(face, element, nextEstimate, clock, true) : undefined;
   return { element, stopEstimate };
 }
 
-function showPinEstimate(face: HTMLElement, marker: HTMLElement, until: string, clock: StationStatusClock, {
-  statusLabel, compact,
-}: { statusLabel?: Text; compact: boolean }) {
+function showPinEstimate(face: HTMLElement, marker: HTMLElement, until: string, clock: StationStatusClock, compact: boolean) {
   const badge = document.createElement('time');
-  badge.className = 'bp-pin-timer ' + (compact ? 'bp-pin-timer-inline' : statusLabel ? 'bp-pin-timer-primary' : 'bp-pin-timer-secondary');
+  badge.className = 'bp-pin-timer' + (compact ? '' : ' bp-pin-timer-float');
   badge.dateTime = until;
   badge.setAttribute('aria-hidden', 'true');
   const baseDescription = marker.getAttribute('aria-description');
@@ -201,8 +234,7 @@ function showPinEstimate(face: HTMLElement, marker: HTMLElement, until: string, 
     const active = badge.parentElement === face;
     if (!seconds) {
       if (active) {
-        if (statusLabel) badge.replaceWith(statusLabel);
-        else badge.remove();
+        badge.remove();
         if (baseDescription) marker.setAttribute('aria-description', baseDescription);
         else marker.removeAttribute('aria-description');
       }
@@ -210,12 +242,10 @@ function showPinEstimate(face: HTMLElement, marker: HTMLElement, until: string, 
     }
     const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
     const remainder = String(seconds % 60).padStart(2, '0');
-    const prefix = compact ? 'Next in ' : statusLabel ? '1 available in ' : '1 more in ';
-    const text = prefix + minutes + ':' + remainder;
+    const text = 'Est. ends in ' + minutes + ':' + remainder;
     if (badge.textContent !== text) badge.textContent = text;
     if (!active) {
-      if (statusLabel) statusLabel.replaceWith(badge);
-      else face.append(badge);
+      face.append(badge);
       const endTime = new Date(until).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium' });
       marker.setAttribute('aria-description', (baseDescription ? baseDescription + ' ' : '') + 'Next occupied estimate ends at ' + endTime + '.');
     }
@@ -227,15 +257,16 @@ interface Props {
   position?: LatLngTuple;
   pins: Pin[];
   selected?: string;
+  selectedGroup?: string;
   inert?: boolean;
   clock?: StationStatusClock;
   clusterStations?: boolean;
-  onSelect?: (id: string, keyboard: boolean) => void;
-  onSelectGroup?: (stationIds: string[], keyboard: boolean) => void;
+  onSelect?: (id: string, keyboard: boolean, source?: HTMLElement) => void;
+  onSelectGroup?: (stationIds: string[], keyboard: boolean, sourceId?: string) => void;
   onMove?: (camera: Camera, query: string) => void;
 }
 
-export default function MapPanel({ camera, pins, position, selected, inert, clock, clusterStations = false, onSelect, onSelectGroup, onMove }: Props) {
+export default function MapPanel({ camera, pins, position, selected, selectedGroup, inert, clock, clusterStations = false, onSelect, onSelectGroup, onMove }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const centeredPosition = useRef<LatLngTuple | undefined>(undefined);
   const focusedPin = useRef<string | undefined>(undefined);
@@ -243,10 +274,10 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
   const initialView = useEffectEvent(() => camera);
-  const select = useEffectEvent((id: string, keyboard: boolean) => onSelect?.(id, keyboard));
-  const selectGroup = useEffectEvent((ids: string[], keyboard: boolean) => {
-    if (ids.length > 1 && onSelectGroup) onSelectGroup(ids, keyboard);
-    else onSelect?.(ids[0], keyboard);
+  const select = useEffectEvent((id: string, keyboard: boolean, source?: HTMLElement) => onSelect?.(id, keyboard, source));
+  const selectGroup = useEffectEvent((ids: string[], keyboard: boolean, source?: HTMLElement) => {
+    if (ids.length > 1 && onSelectGroup) onSelectGroup(ids, keyboard, source?.dataset.cluster);
+    else onSelect?.(ids[0], keyboard, source);
   });
   const publish = useEffectEvent((map: LeafletMap) => {
     const bounds = map.getBounds();
@@ -269,7 +300,6 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
       const start = initialView();
       const instance = L.map(host.current, { center: start.center, zoom: start.zoom, zoomControl: false, minZoom: 2, worldCopyJump: true });
       map = instance;
-      L.control.zoom({ position: 'bottomright' }).addTo(instance);
       const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -321,7 +351,12 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
       const anchor = group.find(pin => pin.stationId) ?? group[0];
       const stationIds = [...new Set(group.map(pin => pin.stationId ?? pin.id))];
       const { element, stopEstimate } = addCluster(L, map, markers, group, pinPosition(anchor, map.getCenter().lng),
-        keyboard => selectGroup(stationIds, keyboard), clock);
+        {
+          open: (keyboard, source) => selectGroup(stationIds, keyboard, source),
+          stationSelected: stationIds.length === 1 && selected === stationIds[0],
+          selectedGroup,
+          clock,
+        });
       if (element) restoreFocus(element, element.dataset.cluster);
       if (stopEstimate) stopEstimates.push(stopEstimate);
       return [];
@@ -335,22 +370,21 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
       const face = document.createElement('span');
       const availability = pin.counts ? stationAvailability(pin.counts) :
         pin.stationId && pin.status ? { status: pin.status, label: statusLabels[pin.status] } : undefined;
-      let statusLabel: Text | undefined;
       const stationId = pin.stationId ?? pin.id;
       const current = selected === stationId;
       face.className = 'bp-pin ' + (availability?.status ?? pin.status ?? '') + (current ? ' selected' : '');
       if (availability) {
         face.classList.add('bp-pin-pill');
-        const dot = document.createElement('i');
-        dot.setAttribute('aria-hidden', 'true');
         if (compact) {
           face.classList.add('bp-compact-pin');
           if (pin.stationId) face.classList.add('bp-charger-pill');
-          const title = pin.stationId ? 'Charger ' + pin.number : chargerCountLabel(pinChargerCount(pin));
-          appendPinLabels(face, title, availability.label).prepend(dot);
+          const title = pin.stationId ? 'Charger ' + pin.number : chargerCountHeading(pinChargerCount(pin));
+          appendPinLabels(face, title, availability.label);
         } else {
-          statusLabel = document.createTextNode(availability.label);
-          face.append(dot, statusLabel);
+          const status = document.createElement('span');
+          status.className = 'bp-map-pin-status';
+          status.textContent = availability.label;
+          face.append(status);
         }
       } else if (pin.number) face.textContent = String(pin.number).padStart(2, '0');
       else {
@@ -360,20 +394,17 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
         face.append(dot);
       }
       const label = availability ? pin.name + ', ' + availability.label +
-        (compact && !pin.stationId ? ', ' + chargerCountLabel(pinChargerCount(pin)) : '') : pin.name;
+        (compact && !pin.stationId ? ', ' + chargerCountLabel(pinChargerCount(pin)) : '') :
+        pin.status ? pin.name + ', ' + statusLabels[pin.status] : pin.name;
       const iconSize: PointTuple = compact ? [detailPinWidth, detailPinHeight] : [44, 44];
       const marker = L.marker(pinPosition(pin, map.getCenter().lng), {
-        icon: L.divIcon({ className: availability ? 'bp-marker bp-pill-marker' : 'bp-marker', html: face,
-          iconSize, iconAnchor: [iconSize[0] / 2, iconSize[1] / 2] }),
+        icon: pinIcon(L, face, iconSize, true),
         title: label, alt: label, interactive, keyboard: interactive, zIndexOffset: current ? 1000 : 0,
       }).addTo(markers);
       const element = marker.getElement();
       element?.setAttribute('aria-label', label);
       if (element && availability && pin.nextStatusChangeAt && clock) {
-        const stopEstimate = showPinEstimate(face, element, pin.nextStatusChangeAt, clock, {
-          compact,
-          statusLabel: !compact && !pin.counts?.available ? statusLabel : undefined,
-        });
+        const stopEstimate = showPinEstimate(face, element, pin.nextStatusChangeAt, clock, compact);
         if (stopEstimate) stopEstimates.push(stopEstimate);
       }
       if (interactive && element) {
@@ -384,10 +415,10 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             event.stopPropagation();
-            select(stationId, true);
+            select(stationId, true, element);
           }
         });
-        marker.on('click', () => select(stationId, false));
+        marker.on('click', () => select(stationId, false, element));
         restoreFocus(element, pin.id);
       }
     }
@@ -399,7 +430,7 @@ export default function MapPanel({ camera, pins, position, selected, inert, cloc
       stopEstimates.forEach(stop => stop());
       markers.remove();
     };
-  }, [loaded, pins, selected, interactive, clock, clusterStations, zoom]);
+  }, [loaded, pins, selected, selectedGroup, interactive, clock, clusterStations, zoom]);
 
   return <section className="bp-map" aria-label="Charging map" inert={inert}>
     <div ref={host} className="bp-map-surface" aria-label="Interactive charging map" />

@@ -1,14 +1,34 @@
 # Architecture
 
+For the product goals, driver flows, and planned features, see [Product overview](PRODUCT.md).
+For tables, keys, and relationships, see the [PostgreSQL database design](DATABASE.md).
+
+## Repository structure
+
+| Path | Responsibility |
+| --- | --- |
+| `frontend/src/app/` | Expo Router entry points |
+| `frontend/src/charging/`, `frontend/src/contact/`, `frontend/src/proposals/` | Web screens and shared feature code |
+| `frontend/public/styles/` | Shared web navigation, page layouts, and form styles in `charging.css`, with feature styles in `contact.css` and `proposals.css` |
+| `frontend/public/fonts/` | Self-hosted Spectral and DM Sans web fonts and their SIL Open Font Licenses |
+| `backend/src/auth/`, `backend/src/stations/`, `backend/src/vehicle-contact/` | NestJS feature modules |
+| `backend/src/database/`, `backend/migrations/` | Database access and versioned schema |
+| `backend/test/` | HTTP integration tests |
+| `scripts/` | Station catalog collection, cleanup, and import commands |
+| `.codex/agents/`, `AGENTS.md` | Agent roles and repository working agreements |
+| `docs/` | Architecture, product overview, API contracts, and timeline |
+
 ## Current state
 
 buscaPila has two independent TypeScript applications in one Git repository.
-Expo web provides a Leaflet charging map, station details, community reports and proposals, account access, vehicle registration, and private charging conversations. The station drawer shows either map results or the selected station's charger details while the map stays mounted. On narrow screens, charger details fill the visible viewport and returning restores the station list. The native target currently displays the buscaPila placeholder. The API exposes GET / returning Hello World!.
+Expo web links the stylesheets in `frontend/public/styles/` from the server-rendered HTML so the browser can style the page before JavaScript starts. It uses Leaflet for the map and calls the NestJS API for account, station, and vehicle contact flows. The map stays mounted when the station drawer switches between results and charger details. The native target currently displays the buscaPila placeholder. The API root route is `GET /`.
 PostgreSQL 18 is configured locally with Docker Compose and connected to NestJS through a node-postgres pool. Startup performs SELECT 1, and db:check verifies a real connection. The backend provides first-party authentication, community charging status, station proposal review, vehicle registration, authenticated exact-match vehicle lookup, and private charging messages. The mobile client integration and production deployment are pending.
 
 Timed occupancy reports store their duration and report time in PostgreSQL. Station reads derive availability from the latest report and the database clock. Expo web displays the countdown and refreshes station results at the next expiration while retaining the map view.
 
-At lower zoom levels, the web map groups nearby stations and labels each group with its charger total. At high zoom, the same viewport request can include charger details so the map can place individual chargers with known coordinates. The station pin represents chargers with no mapped position, and overlapping points share a marker that opens the corresponding station results.
+The web explorer requests chargers with each station viewport and reads connector names from the public connector catalog. Search and the Filters panel update the list and map together. The panel groups availability, connector type and public access. Its trigger shows the number of active criteria, and resetting the panel preserves the search text. When a connector and availability are selected, the same charger must meet both conditions. Station details show the catalog's access and pricing categories.
+
+At lower zoom levels, the web map groups nearby stations and labels each group with its charger total. At high zoom, the map places individual chargers with known coordinates. The station pin represents chargers with no mapped position. Pins show the reported status alongside any active occupancy countdown. Selecting a marker for one station opens a compact preview from the viewport data. A marker shared by multiple stations opens their list. The map identifies the selected group by its member pin IDs, so separate groups serving the same stations can be selected independently. The preview and list rows open the same station detail.
 
 ## System diagram
 
@@ -59,6 +79,15 @@ The mobile app targets iOS and Android; an Android JavaScript export has passed,
 The [station catalog import CLI](STATION_CATALOG_IMPORT.md) submits validated source listings through the administrator station route. PostgreSQL stores external listing identities in `station_sources` and links them to charging stations so retries can resolve to the original station.
 
 ## Agent workflow
+
+| Role | Responsibility |
+| --- | --- |
+| Coordinator | Owns scope, integration, shared contracts, and project documentation. |
+| `frontend` | Implements Expo screens, navigation, and client behavior. |
+| `backend` | Implements NestJS endpoints, business rules, and persistence. |
+| `reviewer` | Independently checks substantial changes for regressions, correctness, and security. |
+| `model_router` | Recommends a model and reasoning effort for unclear or high-impact tasks. |
+| `ios_policy` | Assesses current Apple requirements and release evidence. |
 
 ```mermaid
 flowchart TD

@@ -1,0 +1,1408 @@
+{
+  "region": "MX-SLP",
+  "stations": [
+    {
+      "name": "NISSAN CIUDAD VALLES",
+      "address": "Boulevard México Laredo, Lomas de Yuejat, 79082 Ciudad Valles, S.L.P., México",
+      "latitude": 21.972141,
+      "longitude": -99.001275,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "cd-valles/nissan-ciudad-valles",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cd-valles/nissan-ciudad-valles/"
+      }
+    },
+    {
+      "name": "EVERGO MEDIA LUNA",
+      "address": "Rioverde - San Luis Potosi 153, Casa Blanca, 79660 Cdad. Fernández, S.L.P., Mexico",
+      "latitude": 21.9361176,
+      "longitude": -100.0257481,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "cdad-fernandez/evergo-media-luna",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-fernandez/evergo-media-luna/"
+      }
+    },
+    {
+      "name": "ELECTRONITY - PUNTO NOVEL",
+      "address": "Blvd. Mexico - Laredo 934, Morales, 79080 Cdad. Valles, S.L.P.",
+      "latitude": 21.9785732,
+      "longitude": -99.0051695,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "cdad-valles/electronity-punto-novel",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-valles/electronity-punto-novel/"
+      }
+    },
+    {
+      "name": "NADA",
+      "address": "Arroyo 1106, Rafael Curiel, 79060 Cdad. Valles, S.L.P., Mexico",
+      "latitude": 21.9789906,
+      "longitude": -98.9827347,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "cdad-valles/nada",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-valles/nada/"
+      }
+    },
+    {
+      "name": "PLAZA ELITE",
+      "address": "79050, Veracruz 333, Obrera, 79050 Cdad. Valles, S.L.P., Mexico",
+      "latitude": 21.9838287,
+      "longitude": -99.0080201,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "cdad-valles/plaza-elite",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/cdad-valles/plaza-elite/"
+      }
+    },
+    {
+      "name": "EL TALLER MEZQUITAL",
+      "address": "3RFG+3R, 78495 El Mezquital, S.L.P., Mexico",
+      "latitude": 22.0725529,
+      "longitude": -101.1729176,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        },
+        {
+          "label": "Charger 4",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 5",
+          "connectorTypes": [
+            "type_2"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "el-mezquital/el-taller-mezquital",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/el-mezquital/el-taller-mezquital/"
+      }
+    },
+    {
+      "name": "GASOMAX LAS MARIPOSAS",
+      "address": "P.º de la República 1228, 78425 La Pila, S.L.P., México",
+      "latitude": 22.0086723,
+      "longitude": -100.836737,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        },
+        {
+          "label": "Charger 4",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "la-pila/gasomax-las-mariposas",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/la-pila/gasomax-las-mariposas/"
+      }
+    },
+    {
+      "name": "GASPEED BARRA 17 ANDARES",
+      "address": "Carretera 57 SLP - QRO km 177 + 800 Plaza Andares Local 6 La pila, 78425 San Luis Potosí, SLP, Mexico",
+      "latitude": 21.980068,
+      "longitude": -100.823025,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "la-pila/gaspeed-barra-17-andares",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/la-pila/gaspeed-barra-17-andares/"
+      }
+    },
+    {
+      "name": "LAS PALMAS MIDWAY INN",
+      "address": "Zona de Hoteles, 78745 Matehuala, S.L.P., Mexico",
+      "latitude": 23.660595,
+      "longitude": -100.634944,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "nema_14_50"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "matehuala/las-palmas-midway-inn",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/matehuala/las-palmas-midway-inn/"
+      }
+    },
+    {
+      "name": "NISSAN TORRES CORZO MATEHUALA",
+      "address": "Boulevard Héroes Potosinos 605-B, El Gallo, 78792 Matehuala, S.L.P., México",
+      "latitude": 23.627211,
+      "longitude": -100.640847,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "matehuala/nissan-torres-corzo-matehuala",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/matehuala/nissan-torres-corzo-matehuala/"
+      }
+    },
+    {
+      "name": "LAS SEVILLANAS",
+      "address": "P9CV+H6 Rancho Nuevo, S.L.P., Mexico",
+      "latitude": 23.7214451,
+      "longitude": -100.6069877,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 4",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "rancho-nuevo/las-sevillanas-2",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/rancho-nuevo/las-sevillanas-2/"
+      }
+    },
+    {
+      "name": "BMW CALETTO MOTORS SENDERO",
+      "address": "Calle Españita Ote 200, De La Libertad, 78394 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.122028,
+      "longitude": -100.912253,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/bmw-caletto-motors-sendero",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/bmw-caletto-motors-sendero/"
+      }
+    },
+    {
+      "name": "CENTRO DE CONVENCIONES CARGADOR BMW",
+      "address": "San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.114903,
+      "longitude": -101.002693,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/centro-de-convenciones-cargador-bmw",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/centro-de-convenciones-cargador-bmw/"
+      }
+    },
+    {
+      "name": "CITY EXPRESS SAN LUIS POTOSI ZONA INDUSTRIAL",
+      "address": "Carr. Central Mexico -, Blvd. San Luis 2150 Fracc. Industrias, San Luis Potosi, San Luis Potosi, Mexico, 78399",
+      "latitude": 22.130029,
+      "longitude": -100.927518,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/city-express-san-luis-potosi-zona-industrial",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/city-express-san-luis-potosi-zona-industrial/"
+      }
+    },
+    {
+      "name": "CLUB DE GOLF LA LOMA",
+      "address": "Circuito La Loma 301, 78216 San Luis Potosí, MX",
+      "latitude": 22.117554,
+      "longitude": -101.03344,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/club-de-golf-la-loma",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/club-de-golf-la-loma/"
+      }
+    },
+    {
+      "name": "FIESTA INN SAN LUIS POTOSÍ GLORIETA JUAREZ",
+      "address": "Av. Benito Juárez 130, Fracc. Prados Glorieta, Prados Glorieta, 78390 San Luis, S.L.P.",
+      "latitude": 22.149434,
+      "longitude": -100.953114,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/fiesta-inn-san-luis-potosi-glorieta-juarez",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/fiesta-inn-san-luis-potosi-glorieta-juarez/"
+      }
+    },
+    {
+      "name": "FIESTA INN SAN LUIS POTOSI­ ORIENTE",
+      "address": "Carr. 57 km. 197+100 No. 2390 Periférico Oriente, Industrias, 78090 San Luis Potosi, SLP",
+      "latitude": 22.126793,
+      "longitude": -100.921924,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/fiesta-inn-san-luis-potosi-oriente",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/fiesta-inn-san-luis-potosi-oriente/"
+      }
+    },
+    {
+      "name": "HOSPITAL LOMAS DE SAN LUIS",
+      "address": "Palmira 600, 78218, San Luis, San Luis Potosí.",
+      "latitude": 22.1253265,
+      "longitude": -101.0231559,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/hospital-lomas-de-san-luis",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/hospital-lomas-de-san-luis/"
+      }
+    },
+    {
+      "name": "HOTEL HYATT REGENCY",
+      "address": "Real de Lomas 350, Lomas 4ta Secc, 78216 San Luis, S.L.P., Mexico",
+      "latitude": 22.138238,
+      "longitude": -101.030344,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/hotel-hyatt-regency",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/hotel-hyatt-regency/"
+      }
+    },
+    {
+      "name": "NISSAN SLP SENDERO",
+      "address": "Calle Benemérito de las Américas 110, De La Libertad, 78394 San Luis Potosí, S.L.P., México",
+      "latitude": 22.121706,
+      "longitude": -100.911568,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/nissan-slp-sendero",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/nissan-slp-sendero/"
+      }
+    },
+    {
+      "name": "NISSAN SLP TORRE CORZO",
+      "address": "Avenida Doctor Salvador Nava Martínez, El Paseo 14, 78320 San Luis Potosí, S.L.P., México",
+      "latitude": 22.146221,
+      "longitude": -100.956771,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/nissan-slp-torre-corzo",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/nissan-slp-torre-corzo/"
+      }
+    },
+    {
+      "name": "NISSAN TORRES CORZO CARRANZA",
+      "address": "Avenida Venustiano Carranza 2130, Colonia Polanco, 78200",
+      "latitude": 22.149012,
+      "longitude": -101.009013,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/nissan-torres-corzo-carranza",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/nissan-torres-corzo-carranza/"
+      }
+    },
+    {
+      "name": "PARQUE INDUSTRIAL WTC",
+      "address": "Av. Central km 4, Eje 140 87, Zona Industrial, 78395, San Luis, San Luis Potosí.",
+      "latitude": 22.0409086,
+      "longitude": -100.8945129,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/parque-industrial-wtc",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/parque-industrial-wtc/"
+      }
+    },
+    {
+      "name": "PLAZA CHAPULTEPEC 1200",
+      "address": "Avenida Chapultepec 1200 Alpes, San Luis Potosi, San Luis Potosi, Mexico, 78295",
+      "latitude": 22.125615,
+      "longitude": -101.019206,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/plaza-chapultepec-1200",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/plaza-chapultepec-1200/"
+      }
+    },
+    {
+      "name": "PLAZA SAN LUIS",
+      "address": "Blvd. Antonio Rocha Cordero 7000, Centro, 78215 San Luis, S.L.P., Mexico",
+      "latitude": 22.128349,
+      "longitude": -101.031804,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/plaza-san-luis",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/plaza-san-luis/"
+      }
+    },
+    {
+      "name": "SMART SUITES EBH",
+      "address": "Av. Benito Juárez 3105, Ejido de la Libertad, 78394 San Luis, S.L.P., Mexico",
+      "latitude": 22.124889,
+      "longitude": -100.916733,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/smart-suites-ebh",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/smart-suites-ebh/"
+      }
+    },
+    {
+      "name": "AEROPUERTO SAN LUIS",
+      "address": "Ponciano Arriaga International Airport, Carretera al Aeropuerto, 78415 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.255093,
+      "longitude": -100.936957,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/aeropuerto-san-luis",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/aeropuerto-san-luis/"
+      }
+    },
+    {
+      "name": "BALCONES DEL VALLE",
+      "address": "de las fuentes 216",
+      "latitude": 22.1275552,
+      "longitude": -100.9911084,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "type_2"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/balcones-del-valle",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/balcones-del-valle/"
+      }
+    },
+    {
+      "name": "BMW CALETTO MOTORS",
+      "address": "Cord de los Alpes 750, Lomas 4ta Secc, 78216 San Luis, SLP, Mexico",
+      "latitude": 22.135181,
+      "longitude": -101.029998,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/bmw-caletto-motors",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/bmw-caletto-motors/"
+      }
+    },
+    {
+      "name": "BMW GROUP PLANTA SAN LUIS POTOSÍ",
+      "address": "Boulevard BMW 655, 79526 Villa de Reyes, MX",
+      "latitude": 21.957233,
+      "longitude": -100.836406,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/bmw-group-planta-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/bmw-group-planta-san-luis-potosi/"
+      }
+    },
+    {
+      "name": "BYD CARRETERA 57",
+      "address": "Av Topacio 80, Valle Dorado, 78399 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1350211,
+      "longitude": -100.9365423,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/byd-carretera-57",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/byd-carretera-57/"
+      }
+    },
+    {
+      "name": "CADILLAC SAN LUIS EVERGO",
+      "address": "Cordillera de los Alpes 1001A, Lomas 4ta Secc, 78216 San Luis Potosí, SLP, Mexico",
+      "latitude": 22.1359859,
+      "longitude": -101.0280643,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/cadillac-san-luis-evergo",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/cadillac-san-luis-evergo/"
+      }
+    },
+    {
+      "name": "CITY EXPRESS PLUS BY MARRIOTT SAN LUIS POTOSÍ",
+      "address": "Pl Lomas Lote 52, Lomas del Tecnologico, 78215 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1297307,
+      "longitude": -101.0327597,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/city-express-plus-by-marriott-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/city-express-plus-by-marriott-san-luis-potosi/"
+      }
+    },
+    {
+      "name": "CLUB DEPORTIVO LA LOMA",
+      "address": "San Patricio 160, Mixto la Loma, 78218 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1329979,
+      "longitude": -101.0365894,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/club-deportivo-la-loma",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/club-deportivo-la-loma/"
+      }
+    },
+    {
+      "name": "COURTYARD LOS LAGOS",
+      "address": "Av. Los Lagos 105, Los Lagos, 78397 San Luis Potosí, S.L.P., México",
+      "latitude": 22.0567511,
+      "longitude": -100.8626566,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/courtyard-los-lagos",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/courtyard-los-lagos/"
+      }
+    },
+    {
+      "name": "DALTON BYD",
+      "address": "Av. Eugenio Garza Sada 67, Lomas del Tecnologico, 78215 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1308728,
+      "longitude": -101.0333358,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/dalton-byd",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd/"
+      }
+    },
+    {
+      "name": "DALTON BYD CAMPESTRE",
+      "address": "P.º Campestre 200, Potosino de Golf, 78153 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.16093,
+      "longitude": -101.0087596,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/dalton-byd-campestre",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-campestre/"
+      }
+    },
+    {
+      "name": "DALTON BYD LLCG",
+      "address": "Cto. La Loma 301, Lomas del Tecnológico, 78216 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1203745,
+      "longitude": -101.0318419,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/dalton-byd-llcg",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-llcg/"
+      }
+    },
+    {
+      "name": "DALTON BYD LOMAS",
+      "address": "Av. Cordillera Karakorum 570 A, Lomas 4ta Secc, 78216 San Luis Potosí, S.L.P., México",
+      "latitude": 22.1367149,
+      "longitude": -101.0283724,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/dalton-byd-lomas",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-lomas/"
+      }
+    },
+    {
+      "name": "GASOLINERA LA POSTA",
+      "address": "Carr. a Zacatecas 450, Sauzalito, 78116 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.2019839,
+      "longitude": -101.0235176,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        },
+        {
+          "label": "Charger 4",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/gasolinera-la-posta",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/gasolinera-la-posta/"
+      }
+    },
+    {
+      "name": "GASOMAX CAPULINES",
+      "address": "Anillo Perif. 1233, Diez de Abril, 78133 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1845726,
+      "longitude": -101.0328954,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        },
+        {
+          "label": "Charger 4",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/gasomax-capulines",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/gasomax-capulines/"
+      }
+    },
+    {
+      "name": "GWM HERRERA SAN LUIS",
+      "address": "Blvd. Antonio Rocha Cordero 693, Lomas del Tecnologico, 78216 San Luis Potosí, S.L.P., México",
+      "latitude": 22.13127,
+      "longitude": -101.0328323,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/gwm-herrera-san-luis",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/gwm-herrera-san-luis/"
+      }
+    },
+    {
+      "name": "HOLIDAY INN EXPRESS SAN LUIS POTOSÍ",
+      "address": "AV. BENITO JUAREZ 1270, COL. VALLE DORADO SAN LUIS POTOSI, SLP",
+      "latitude": 22.1386973,
+      "longitude": -100.9393848,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/holiday-inn-express-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/holiday-inn-express-san-luis-potosi/"
+      }
+    },
+    {
+      "name": "HOTEL NH SAN LUIS POTOSÍ",
+      "address": "Av. Venustiano Carranza 1460, De Tequisquiapan 78250",
+      "latitude": 22.1503465,
+      "longitude": -100.9962011,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/hotel-nh-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/hotel-nh-san-luis-potosi/"
+      }
+    },
+    {
+      "name": "MERCEDES BENZ CARGADOR J1772",
+      "address": "Estacionamiento La Loma Centro Deportivo",
+      "latitude": 22.132411,
+      "longitude": -101.0367696,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/mercedes-benz-cargador-j1772",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/mercedes-benz-cargador-j1772/"
+      }
+    },
+    {
+      "name": "HILTON SAN LUIS POTOSI",
+      "address": "Fracc. Lomas de Sa, Real de Lomas No. 1000, Lomas 4ta Secc, 78218 San Luis, S.L.P., Mexico",
+      "latitude": 22.136434,
+      "longitude": -101.029323,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/hilton-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/hilton-san-luis-potosi/"
+      }
+    },
+    {
+      "name": "MOBIL LA POSADA",
+      "address": "Golfo de México 112, Santa Fe, 78070 San Luis, S.L.P., Mexico",
+      "latitude": 22.144694,
+      "longitude": -100.946377,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/mobil-la-posada",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/mobil-la-posada/"
+      }
+    },
+    {
+      "name": "MOBIL LOMAS",
+      "address": "Blvd. Antonio Rocha Cordero 357, Col. Desarrollo del Pedregal, 78295, San Luis Potosí, San Luis Potosí.",
+      "latitude": 22.1280479,
+      "longitude": -101.0216039,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/mobil-lomas",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/mobil-lomas/"
+      }
+    },
+    {
+      "name": "SOLARIUM ENERGY",
+      "address": "Malaquita 540",
+      "latitude": 22.1414981,
+      "longitude": -100.9504581,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "type_2"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/solarium-energy",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/solarium-energy/"
+      }
+    },
+    {
+      "name": "VOLVO SUECIA CAR SAN LUIS POTOSÍ",
+      "address": "Real de Lomas 1001, Lomas 4ta Secc, 78216 San Luis Potosí, S.L.P., México",
+      "latitude": 22.1361114,
+      "longitude": -101.0287777,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/volvo-suecia-car-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/volvo-suecia-car-san-luis-potosi/"
+      }
+    },
+    {
+      "name": "WATTS BY VEMO - THE PARK",
+      "address": "Blvd. Antonio Rocha Cordero 135, Lomas de Bella Vista, 78380 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1184815,
+      "longitude": -101.0063816,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/watts-by-vemo-the-park",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/watts-by-vemo-the-park/"
+      }
+    },
+    {
+      "name": "GASOMAX EVERGO",
+      "address": "San Luis Potosí - Matehuala 639, 78863 Santa Cruz, S.L.P., México",
+      "latitude": 23.165626,
+      "longitude": -100.5240447,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "santa-cruz/gasomax-evergo",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/santa-cruz/gasomax-evergo/"
+      }
+    },
+    {
+      "name": "GASOMAX LA ESTANCIA",
+      "address": "México 57 639, 78863 Santa Cruz, S.L.P., México",
+      "latitude": 23.1659475,
+      "longitude": -100.5240564,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "santa-cruz/gasomax-la-estancia",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/santa-cruz/gasomax-la-estancia/"
+      }
+    },
+    {
+      "name": "ESTACIÓN DE SERVICIO GASOMAX LA HACIENDA",
+      "address": "Justo Sierra, Loma Bonita, 79560 Santa María del Río, SLP, Mexico",
+      "latitude": 21.807489,
+      "longitude": -100.724272,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "chademo"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "santa-maria-del-rio/estacion-de-servicio-gasomax-la-hacienda",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/santa-maria-del-rio/estacion-de-servicio-gasomax-la-hacienda/"
+      }
+    },
+    {
+      "name": "LA MÁQUINITA",
+      "address": "Matehuala - San Luis Potosí 51, 78973 Villa Hidalgo, S.L.P., Mexico",
+      "latitude": 22.5194088,
+      "longitude": -100.6640472,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "villa-hidalgo/la-maquinita",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/villa-hidalgo/la-maquinita/"
+      }
+    },
+    {
+      "name": "LAS SEVILLANAS",
+      "address": "Matehuala - Monterrey, Cruz de Elorza, S.L.P., Mexico",
+      "latitude": 23.721462,
+      "longitude": -100.607074,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "ccs1"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "gbt_dc"
+          ]
+        },
+        {
+          "label": "Charger 3",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 4",
+          "connectorTypes": [
+            "nacs"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "rancho-nuevo/las-sevillanas-1",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/rancho-nuevo/las-sevillanas-1/"
+      },
+      "existingStationId": "9ed11cbf-e16a-41b2-86a7-aa61fe70b5e3"
+    },
+    {
+      "name": "CLUB DEPORTIVO LA LOMA",
+      "address": "Av. de la Victoria 100, Mixto La Loma, 78216, San Luis, San Luis Potosí.",
+      "latitude": 22.1328565,
+      "longitude": -101.0364607,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis/deportivo-la-loma",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis/deportivo-la-loma/"
+      },
+      "existingStationId": "13b3dc27-0dc8-47ad-8964-b06cc5ea9508"
+    },
+    {
+      "name": "CLUB DEPORTIVO LA LOMA",
+      "address": "San Patricio 160, Mixto la Loma, 78218 San Luis Potosí, S.L.P., Mexico",
+      "latitude": 22.1327958,
+      "longitude": -101.0367177,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "gbt_ac"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "household_outlet"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/dalton-byd-la-loma",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/dalton-byd-la-loma/"
+      },
+      "existingStationId": "13b3dc27-0dc8-47ad-8964-b06cc5ea9508"
+    },
+    {
+      "name": "HOLIDAY INN EXPRESS SAN LUIS POTOSÍ",
+      "address": "Av. Benito Juarez 1270, Valle Dorado, 78399 San Luis Potosí, S.L.P., México",
+      "latitude": 22.1386102,
+      "longitude": -100.9394833,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/holiday-in",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/holiday-in/"
+      },
+      "existingStationId": "4fd5edb9-ea19-49b5-b226-40a618bb995d"
+    },
+    {
+      "name": "BALCONES DEL VALLE",
+      "address": "de las fuentes 216 balcones del valle",
+      "latitude": 22.1275783,
+      "longitude": -100.9911282,
+      "chargers": [
+        {
+          "label": "Charger 1",
+          "connectorTypes": [
+            "j1772"
+          ]
+        },
+        {
+          "label": "Charger 2",
+          "connectorTypes": [
+            "type_2"
+          ]
+        }
+      ],
+      "source": {
+        "provider": "fullcarro",
+        "externalId": "san-luis-potosi/punto-de-carga-en-san-luis-potosi",
+        "sourceUrl": "https://ev.fullcarro.com/plug/mexico/san-luis-potosi/san-luis-potosi/punto-de-carga-en-san-luis-potosi/"
+      },
+      "existingStationId": "d1081837-a42f-4a5a-bd48-ce5a11a17d59"
+    }
+  ]
+}

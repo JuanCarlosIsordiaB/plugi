@@ -18,9 +18,11 @@ function ProposalLocation() {
   const [longitude, setLongitude] = useState('');
   const point = latitude !== '' && longitude !== '' && Math.abs(Number(latitude)) <= 90 && Math.abs(Number(longitude)) <= 180;
 
-  return <section className="bp-proposal-section" aria-labelledby="proposal-location-heading">
-    <h2 id="proposal-location-heading">Station location</h2>
-    <p className="bp-muted">Move the map so the crosshair lines up with the station, or enter the coordinates directly.</p>
+  return <section className="bp-page-surface bp-proposal-section" aria-labelledby="proposal-location-heading">
+    <div className="bp-proposal-section-title">
+      <h2 id="proposal-location-heading">Station location</h2>
+      <p className="bp-muted">Move the map so the crosshair lines up with the station, or enter the coordinates directly.</p>
+    </div>
     <div className="bp-proposal-map">
       <MapPanel camera={initialCamera} pins={emptyPins} onMove={camera => { mapCamera.current = camera; setMapReady(true); }} />
       {mapReady && <span className="bp-proposal-crosshair" aria-hidden="true">+</span>}
@@ -135,21 +137,21 @@ function ProposalForm({ catalog }: { catalog: ConnectorType[] }) {
     }
   }
 
-  if (proposal) return <div className="bp-empty">
+  if (proposal) return <div className="bp-page-surface bp-proposal-state">
     <h2 ref={confirmation} tabIndex={-1}>Proposal submitted</h2>
     <p>{proposal.station.name} is pending review. You can track its status in My proposals.</p>
     <AppLink href={proposalsHref} className="bp-primary">View my proposals</AppLink>
   </div>;
 
-  return <form className="bp-form" onSubmit={submit}>
+  return <form className="bp-form bp-proposal-form" onSubmit={submit}>
     <fieldset className="bp-proposal-fields" disabled={pending}>
-      <section className="bp-proposal-section" aria-labelledby="proposal-details-heading">
+      <section className="bp-page-surface bp-proposal-section" aria-labelledby="proposal-details-heading">
         <h2 id="proposal-details-heading">Station details</h2>
         <label>Station name<input name="name" required maxLength={120} pattern={textPattern} /></label>
         <label>Street address<input name="address" required maxLength={300} pattern={textPattern} /></label>
       </section>
       <ProposalLocation />
-      <section className="bp-proposal-section" aria-labelledby="proposal-chargers-heading">
+      <section className="bp-page-surface bp-proposal-section" aria-labelledby="proposal-chargers-heading">
         <h2 id="proposal-chargers-heading">Chargers</h2>
         {chargerIds.map((id, index) => <ChargerFields key={id} id={id} index={index} catalog={catalog}
           error={connectorError?.id === id ? connectorError.message : undefined}
@@ -174,8 +176,10 @@ function ProposalForm({ catalog }: { catalog: ConnectorType[] }) {
 
 function NewProposalForm() {
   const { data, error, retry } = useResource<ConnectorType[]>('/connector-types');
-  return data?.length ? <ProposalForm catalog={data} /> : <Feedback retry={retry} loading="Loading connector types…"
-    error={error ?? (data ? 'No connector types are currently available.' : undefined)} />;
+  return data?.length ? <ProposalForm catalog={data} /> : <div className="bp-page-surface bp-proposal-state">
+    <Feedback retry={retry} loading="Loading connector types…"
+      error={error ?? (data ? 'No connector types are currently available.' : undefined)} />
+  </div>;
 }
 
 export default function NewProposal() {
